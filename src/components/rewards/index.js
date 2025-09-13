@@ -1,0 +1,5 @@
+export { default as RewardsDashboard } from './RewardsDashboard'
+export { default as AchievementModal } from './AchievementModal'
+export { default as BadgeGallery } from './BadgeGallery'
+export { default as WeeklyChallenges } from './WeeklyChallenges'
+export { default as Leaderboard } from './Leaderboard'
