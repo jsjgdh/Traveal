@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import ActiveTrip from './ActiveTrip'
 import TripDetectionModal from './TripDetectionModal'
 import { Car, Bus, Footprints, Play, Loader } from 'lucide-react'
+import { useNotifications, NOTIFICATION_TYPES, NOTIFICATION_PRIORITY, TripValidationNotification } from '../notifications'
 
 function TripManager() {
   const [currentTrip, setCurrentTrip] = useState(null)
@@ -9,6 +10,10 @@ function TripManager() {
   const [showDetectionModal, setShowDetectionModal] = useState(false)
   const [isDetecting, setIsDetecting] = useState(false)
   const [detectionStatus, setDetectionStatus] = useState('idle') // idle, detecting, detected
+  const [showTripValidation, setShowTripValidation] = useState(false)
+  const [pendingTrip, setPendingTrip] = useState(null)
+  
+  const { addNotification } = useNotifications()
 
   // Simulate trip detection
   useEffect(() => {
@@ -20,17 +25,30 @@ function TripManager() {
         const mockTrip = {
           id: Date.now(),
           mode: ['car', 'bus', 'walking'][Math.floor(Math.random() * 3)],
-          startTime: new Date(),
+          origin: ['Home', 'Office', 'Mall', 'University'][Math.floor(Math.random() * 4)],
           destination: ['Kochi Metro Station', 'Ernakulam Junction', 'Marine Drive', 'MG Road'][Math.floor(Math.random() * 4)],
+          startTime: new Date().toISOString(),
+          detectedAt: new Date().toISOString(),
           duration: `${Math.floor(Math.random() * 30 + 10)} min`,
           distance: `${(Math.random() * 5 + 1).toFixed(1)} km`,
           confidence: Math.random() * 0.3 + 0.7 // 70-100% confidence
         }
         
         setDetectedTrip(mockTrip)
+        setPendingTrip(mockTrip)
         setShowDetectionModal(true)
+        setShowTripValidation(true)
         setIsDetecting(false)
         setDetectionStatus('detected')
+        
+        // Add notification to notification center
+        addNotification({
+          type: NOTIFICATION_TYPES.TRIP_VALIDATION,
+          priority: NOTIFICATION_PRIORITY.HIGH,
+          title: 'Trip Detected',
+          message: `Please validate your trip from ${mockTrip.origin} to ${mockTrip.destination}`,
+          data: mockTrip
+        })
       }, 3000) // 3 second detection delay
     }
 
@@ -58,14 +76,18 @@ function TripManager() {
   const handleConfirmDetection = (trip) => {
     setCurrentTrip(trip)
     setShowDetectionModal(false)
+    setShowTripValidation(false)
     setDetectedTrip(null)
+    setPendingTrip(null)
     setDetectionStatus('idle')
   }
 
   const handleRejectDetection = (trip) => {
     console.log('Trip rejected:', trip)
     setShowDetectionModal(false)
+    setShowTripValidation(false)
     setDetectedTrip(null)
+    setPendingTrip(null)
     setDetectionStatus('idle')
   }
 
@@ -73,8 +95,31 @@ function TripManager() {
     console.log('Edit trip:', trip)
     // Navigate to trip editing screen
     setShowDetectionModal(false)
+    setShowTripValidation(false)
     setDetectedTrip(null)
+    setPendingTrip(null)
     setDetectionStatus('idle')
+  }
+  
+  const handleTripValidation = (validatedTrip) => {
+    console.log('Trip validated:', validatedTrip)
+    setCurrentTrip(validatedTrip)
+    setShowTripValidation(false)
+    setPendingTrip(null)
+    
+    // Add success notification
+    addNotification({
+      type: NOTIFICATION_TYPES.TRIP_VALIDATION,
+      priority: NOTIFICATION_PRIORITY.LOW,
+      title: 'Trip Validated',
+      message: `Trip from ${validatedTrip.origin} to ${validatedTrip.destination} has been validated`,
+      data: validatedTrip
+    })
+  }
+
+  const handleDismissTripValidation = () => {
+    setShowTripValidation(false)
+    setPendingTrip(null)
   }
 
   const handleEndTrip = (tripData) => {
@@ -92,6 +137,7 @@ function TripManager() {
     setShowDetectionModal(false)
     setDetectedTrip(null)
     setDetectionStatus('idle')
+    // Keep trip validation if pending
   }
 
   // Auto-close detection modal after 10 seconds
@@ -234,6 +280,15 @@ function TripManager() {
         onEdit={handleEditTrip}
         onClose={handleCloseModal}
       />
+      
+      {/* Trip Validation Notification */}
+      {showTripValidation && pendingTrip && (
+        <TripValidationNotification
+          trip={pendingTrip}
+          onValidate={handleTripValidation}
+          onDismiss={handleDismissTripValidation}
+        />
+      )}
     </div>
   )
 }

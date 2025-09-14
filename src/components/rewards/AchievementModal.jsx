@@ -1,30 +1,51 @@
 import { useState, useEffect } from 'react'
-import { X, Trophy, Star, Gift, Zap } from 'lucide-react'
+import { X, Trophy, Star, Gift, Zap, Crown, Award, Target } from 'lucide-react'
 
-function AchievementModal({ isOpen, onClose, achievement, points = 0, isLevelUp = false }) {
+function AchievementModal({ isOpen, onClose, achievement, points = 0, isLevelUp = false, showCelebration: propShowCelebration = true }) {
   const [showCelebration, setShowCelebration] = useState(false)
   const [pointsAnimation, setPointsAnimation] = useState(false)
   const [displayPoints, setDisplayPoints] = useState(0)
+  const [confettiPieces, setConfettiPieces] = useState([])
+  const [showFullCelebration, setShowFullCelebration] = useState(false)
 
   useEffect(() => {
-    if (isOpen && achievement) {
+    if (isOpen && achievement && propShowCelebration) {
+      // Create confetti pieces
+      const pieces = Array.from({ length: 20 }, (_, i) => ({
+        id: i,
+        emoji: ['⭐', '🎉', '✨', '🏆', '🎊', '💫'][Math.floor(Math.random() * 6)],
+        left: Math.random() * 100,
+        animationDelay: Math.random() * 1000,
+        duration: 2000 + Math.random() * 1000
+      }))
+      setConfettiPieces(pieces)
+      
       setShowCelebration(true)
+      setShowFullCelebration(true)
+      
       // Start points animation after trophy animation
       setTimeout(() => {
         setPointsAnimation(true)
         animatePoints()
       }, 800)
+      
+      // Stop full celebration after 3 seconds
+      setTimeout(() => {
+        setShowFullCelebration(false)
+      }, 3000)
     } else {
       setShowCelebration(false)
       setPointsAnimation(false)
       setDisplayPoints(0)
+      setConfettiPieces([])
+      setShowFullCelebration(false)
     }
-  }, [isOpen, achievement, points])
+  }, [isOpen, achievement, points, propShowCelebration])
 
   const animatePoints = () => {
     if (points > 0) {
       let currentPoints = 0
-      const increment = Math.ceil(points / 20) // Animate over ~1 second
+      const increment = Math.ceil(points / 30) // Slower animation for better effect
       const timer = setInterval(() => {
         currentPoints += increment
         if (currentPoints >= points) {
@@ -32,18 +53,19 @@ function AchievementModal({ isOpen, onClose, achievement, points = 0, isLevelUp 
           clearInterval(timer)
         }
         setDisplayPoints(currentPoints)
-      }, 50)
+      }, 40) // Slightly slower increment
     }
   }
 
   if (!isOpen || !achievement) return null
 
   const achievementTypes = {
-    first: { bgColor: 'bg-blue-500', icon: Trophy },
-    streak: { bgColor: 'bg-orange-500', icon: Zap },
-    social: { bgColor: 'bg-purple-500', icon: Star },
-    milestone: { bgColor: 'bg-green-500', icon: Gift },
-    level: { bgColor: 'bg-yellow-500', icon: Trophy }
+    first: { bgColor: 'bg-gradient-to-br from-blue-500 to-blue-600', icon: Trophy, particles: '🌟' },
+    streak: { bgColor: 'bg-gradient-to-br from-orange-500 to-red-500', icon: Zap, particles: '🔥' },
+    social: { bgColor: 'bg-gradient-to-br from-purple-500 to-pink-500', icon: Star, particles: '✨' },
+    milestone: { bgColor: 'bg-gradient-to-br from-green-500 to-emerald-500', icon: Target, particles: '🎯' },
+    level: { bgColor: 'bg-gradient-to-br from-yellow-500 to-amber-500', icon: Crown, particles: '👑' },
+    special: { bgColor: 'bg-gradient-to-br from-indigo-500 to-purple-600', icon: Award, particles: '🏆' }
   }
 
   const type = achievement.type || 'milestone'
@@ -62,38 +84,63 @@ function AchievementModal({ isOpen, onClose, achievement, points = 0, isLevelUp 
             <X size={16} />
           </button>
 
-          {/* Celebration Background */}
+          {/* Celebration Background with Enhanced Confetti */}
           <div className={`${config.bgColor} relative p-8 text-center overflow-hidden`}>
-            {/* Confetti Animation */}
-            {showCelebration && (
-              <div className="absolute inset-0">
-                {[...Array(12)].map((_, i) => (
+            {/* Enhanced Confetti Animation */}
+            {showFullCelebration && (
+              <div className="absolute inset-0 pointer-events-none">
+                {confettiPieces.map((piece) => (
                   <div
-                    key={i}
-                    className="absolute animate-bounce-in"
+                    key={piece.id}
+                    className="absolute text-2xl animate-bounce-in opacity-90"
                     style={{
-                      left: `${Math.random() * 100}%`,
-                      top: `${Math.random() * 100}%`,
-                      animationDelay: `${Math.random() * 0.5}s`,
-                      animationDuration: `${1 + Math.random()}s`
+                      left: `${piece.left}%`,
+                      top: `${Math.random() * 80}%`,
+                      animationDelay: `${piece.animationDelay}ms`,
+                      animationDuration: `${piece.duration}ms`,
+                      transform: `rotate(${Math.random() * 360}deg)`
                     }}
                   >
-                    {['⭐', '🎉', '✨', '🏆'][Math.floor(Math.random() * 4)]}
+                    {piece.emoji}
+                  </div>
+                ))}
+                
+                {/* Particle effects specific to achievement type */}
+                {[...Array(8)].map((_, i) => (
+                  <div
+                    key={`particle-${i}`}
+                    className="absolute text-3xl animate-float opacity-80"
+                    style={{
+                      left: `${10 + (i * 10)}%`,
+                      top: `${20 + (i % 3) * 20}%`,
+                      animationDelay: `${i * 200}ms`,
+                      animationDuration: `${2000 + Math.random() * 1000}ms`
+                    }}
+                  >
+                    {config.particles}
                   </div>
                 ))}
               </div>
             )}
 
-            {/* Trophy Icon with Celebration Animation */}
+            {/* Trophy Icon with Enhanced Celebration Animation */}
             <div className="relative z-10">
-              <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full bg-white bg-opacity-20 mb-4 ${showCelebration ? 'animate-celebration-bounce' : ''}`}>
-                <IconComponent size={40} className="text-white" />
+              <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full bg-white bg-opacity-20 mb-4 relative ${
+                showCelebration ? 'animate-celebration-bounce animate-glow' : ''
+              }`}>
+                <IconComponent size={40} className="text-white drop-shadow-lg" />
+                
+                {/* Glow ring effect */}
+                {showFullCelebration && (
+                  <div className="absolute inset-0 rounded-full bg-white opacity-30 animate-ping" />
+                )}
               </div>
               
+              {/* Enhanced Level Up Badge */}
               {isLevelUp && (
-                <div className="absolute -top-2 -right-2 animate-pulse">
-                  <div className="bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded-full">
-                    LEVEL UP!
+                <div className="absolute -top-2 -right-2 animate-bounce-in">
+                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">
+                    🚀 LEVEL UP!
                   </div>
                 </div>
               )}
@@ -122,13 +169,19 @@ function AchievementModal({ isOpen, onClose, achievement, points = 0, isLevelUp 
             {achievement.description}
           </p>
 
-          {/* Points Animation */}
+          {/* Enhanced Points Animation */}
           {points > 0 && (
-            <div className={`inline-flex items-center space-x-2 px-4 py-2 bg-primary-50 text-primary-700 rounded-full mb-4 ${pointsAnimation ? 'animate-points-earned' : 'opacity-0'}`}>
-              <Star size={16} className="text-primary-500" />
-              <span className="font-bold">
+            <div className={`inline-flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-primary-50 to-secondary-50 text-primary-700 rounded-full mb-4 relative overflow-hidden ${
+              pointsAnimation ? 'animate-points-earned animate-glow' : 'opacity-0'
+            }`}>
+              {/* Animated background shimmer */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-shimmer" />
+              
+              <Star size={16} className="text-primary-500 animate-sparkle" />
+              <span className="font-bold relative z-10">
                 +{displayPoints} points earned!
               </span>
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full animate-ping" />
             </div>
           )}
 
@@ -139,13 +192,13 @@ function AchievementModal({ isOpen, onClose, achievement, points = 0, isLevelUp 
             </div>
           )}
 
-          {/* Share Options */}
+          {/* Enhanced Action Buttons */}
           <div className="flex space-x-3 mb-4 animate-fade-in" style={{ animationDelay: '0.8s' }}>
-            <button className="flex-1 btn-secondary text-sm py-2">
-              Share Achievement
+            <button className="flex-1 btn-secondary text-sm py-2 hover:animate-scale-bounce transition-all duration-200 hover:shadow-md">
+              📤 Share Achievement
             </button>
-            <button className="flex-1 btn-primary text-sm py-2">
-              View Progress
+            <button className="flex-1 btn-primary text-sm py-2 hover:animate-scale-bounce transition-all duration-200 hover:shadow-lg">
+              📊 View Progress
             </button>
           </div>
 

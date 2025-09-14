@@ -1,8 +1,10 @@
 import { Bell, Settings, MapPin, Battery, Target, Car, Bus, Footprints, Plus, History, Gift, Share2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useNotifications, SystemStatusMonitor } from '../components/notifications'
 
 function Dashboard() {
   const navigate = useNavigate()
+  const { systemStatus } = useNotifications()
   const todaysTrips = [
     { id: 1, mode: 'car', icon: Car, distance: '2.5km', time: '9:15 AM' },
     { id: 2, mode: 'bus', icon: Bus, distance: '4.2km', time: '2:30 PM' },
@@ -164,6 +166,12 @@ function Dashboard() {
               )
             })}
           </div>
+        </div>
+
+        {/* System Status Monitor */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold text-gray-900">System Status</h3>
+          <SystemStatusMonitor compact={true} />
         </div>
 
         {/* Recent Activity */}

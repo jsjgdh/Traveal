@@ -187,11 +187,15 @@ function BadgeGallery({ achievements, onAchievementClick, showAll = false }) {
           {earnedCount}/{totalCount}
         </div>
         <div className="text-sm text-gray-600">Achievements Unlocked</div>
-        <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+        <div className="w-full bg-gray-200 rounded-full h-2 mt-2 relative overflow-hidden">
           <div
-            className="bg-gradient-to-r from-primary-500 to-secondary-500 h-2 rounded-full transition-all duration-500"
+            className="bg-gradient-to-r from-primary-500 to-secondary-500 h-2 rounded-full transition-all duration-500 animate-pulse-slow"
             style={{ width: `${(earnedCount / totalCount) * 100}%` }}
           />
+          {/* Progress sparkle */}
+          {earnedCount > 0 && (
+            <div className="absolute top-0 right-2 w-1 h-1 bg-yellow-300 rounded-full animate-sparkle" />
+          )}
         </div>
       </div>
 
@@ -241,19 +245,25 @@ function BadgeGallery({ achievements, onAchievementClick, showAll = false }) {
 
       {/* Achievement Grid */}
       <div className="grid grid-cols-2 gap-4">
-        {sortedAchievements.map((achievement) => (
+        {sortedAchievements.map((achievement, index) => (
           <button
             key={achievement.id}
             onClick={() => onAchievementClick && onAchievementClick(achievement)}
-            className={`relative p-4 rounded-xl border-2 transition-all duration-200 hover:scale-105 ${
+            className={`relative p-4 rounded-xl border-2 transition-all duration-300 hover:shadow-lg group ${
               achievement.earned
-                ? `${rarityColors[achievement.rarity]} animate-fade-in`
-                : 'border-gray-200 bg-gray-100 opacity-60'
+                ? `${rarityColors[achievement.rarity]} animate-fade-in hover:scale-105 hover:animate-glow`
+                : 'border-gray-200 bg-gray-100 opacity-60 hover:opacity-80'
             }`}
+            style={{ animationDelay: `${index * 50}ms` }}
           >
             {/* Rarity Badge */}
             {achievement.earned && (
-              <div className="absolute -top-1 -right-1 text-xs px-2 py-1 bg-white rounded-full border border-gray-200 font-medium">
+              <div className={`absolute -top-1 -right-1 text-xs px-2 py-1 bg-white rounded-full border shadow-sm font-medium animate-fade-in ${
+                achievement.rarity === 'legendary' ? 'text-yellow-700 border-yellow-300 animate-glow' :
+                achievement.rarity === 'epic' ? 'text-purple-700 border-purple-300' :
+                achievement.rarity === 'rare' ? 'text-blue-700 border-blue-300' :
+                'text-gray-700 border-gray-200'
+              }`}>
                 {rarityLabels[achievement.rarity]}
               </div>
             )}
@@ -266,13 +276,15 @@ function BadgeGallery({ achievements, onAchievementClick, showAll = false }) {
             )}
 
             {/* Achievement Icon */}
-            <div className={`text-3xl mb-2 ${!achievement.earned ? 'grayscale' : ''}`}>
+            <div className={`text-3xl mb-2 transition-all duration-300 ${
+              !achievement.earned ? 'grayscale' : 'group-hover:animate-bounce'
+            }`}>
               {achievement.icon}
             </div>
 
             {/* Achievement Name */}
-            <div className={`text-sm font-semibold mb-1 ${
-              achievement.earned ? 'text-gray-900' : 'text-gray-500'
+            <div className={`text-sm font-semibold mb-1 transition-colors ${
+              achievement.earned ? 'text-gray-900 group-hover:text-primary-700' : 'text-gray-500'
             }`}>
               {achievement.name}
             </div>
@@ -287,11 +299,15 @@ function BadgeGallery({ achievements, onAchievementClick, showAll = false }) {
                 <div className="text-xs text-gray-500">
                   {achievement.progress}/{achievement.target}
                 </div>
-                <div className="w-full bg-gray-300 rounded-full h-1">
+                <div className="w-full bg-gray-300 rounded-full h-1 relative overflow-hidden">
                   <div
-                    className="bg-primary-400 h-1 rounded-full transition-all duration-300"
+                    className="bg-primary-400 h-1 rounded-full transition-all duration-300 animate-pulse-slow"
                     style={{ width: `${(achievement.progress / achievement.target) * 100}%` }}
                   />
+                  {/* Progress indicator */}
+                  {achievement.progress > 0 && (
+                    <div className="absolute top-0 right-0 w-0.5 h-0.5 bg-yellow-400 rounded-full animate-sparkle" />
+                  )}
                 </div>
               </div>
             ) : (
@@ -301,11 +317,16 @@ function BadgeGallery({ achievements, onAchievementClick, showAll = false }) {
             )}
 
             {/* Points */}
-            <div className={`absolute bottom-2 left-2 text-xs font-medium ${
-              achievement.earned ? 'text-primary-600' : 'text-gray-400'
+            <div className={`absolute bottom-2 left-2 text-xs font-medium transition-colors ${
+              achievement.earned ? 'text-primary-600 group-hover:text-primary-700' : 'text-gray-400'
             }`}>
               +{achievement.points} pts
             </div>
+            
+            {/* Hover glow effect */}
+            {achievement.earned && (
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary-100 to-secondary-100 opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
+            )}
           </button>
         ))}
       </div>

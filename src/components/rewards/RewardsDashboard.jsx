@@ -1,8 +1,10 @@
-import { useState } from 'react'
-import { Gift, Trophy, Star, Target, Calendar, Zap, Map, Users, Clock, ChevronRight } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Gift, Trophy, Star, Target, Calendar, Zap, Map, Users, Clock, ChevronRight, Award, TrendingUp } from 'lucide-react'
 
-function RewardsDashboard({ userStats, onRedeemRewards, onAchievementClick }) {
+function RewardsDashboard({ userStats, onRedeemRewards, onAchievementClick, onShowAchievementModal }) {
   const [selectedLevel, setSelectedLevel] = useState(null)
+  const [showLevelUpAnimation, setShowLevelUpAnimation] = useState(false)
+  const [pointsGained, setPointsGained] = useState(0)
 
   // Default user stats if not provided
   const defaultStats = {
@@ -34,6 +36,15 @@ function RewardsDashboard({ userStats, onRedeemRewards, onAchievementClick }) {
   const progressPercentage = (stats.currentPoints / stats.nextLevelPoints) * 100
   const earnedAchievements = stats.achievements.filter(a => a.earned)
   const recentAchievements = earnedAchievements.slice(-3)
+
+  // Check for level up animation
+  useEffect(() => {
+    if (userStats?.levelUpAnimation) {
+      setShowLevelUpAnimation(true)
+      setPointsGained(userStats.pointsGained || 0)
+      setTimeout(() => setShowLevelUpAnimation(false), 3000)
+    }
+  }, [userStats?.levelUpAnimation])
 
   const levelBenefits = {
     1: ['Basic tracking', 'Weekly summaries'],
@@ -69,15 +80,27 @@ function RewardsDashboard({ userStats, onRedeemRewards, onAchievementClick }) {
         {/* Progress Bar */}
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Progress</span>
+            <span className="text-gray-600">Progress to Level {stats.currentLevel + 1}</span>
             <span className="text-primary-600 font-medium">{Math.round(progressPercentage)}%</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-3">
+          <div className="w-full bg-gray-200 rounded-full h-3 relative overflow-hidden">
             <div
-              className="bg-gradient-to-r from-primary-500 to-secondary-500 h-3 rounded-full transition-all duration-700 ease-out animate-pulse-slow"
+              className={`bg-gradient-to-r from-primary-500 to-secondary-500 h-3 rounded-full transition-all duration-700 ease-out ${
+                showLevelUpAnimation ? 'animate-level-up animate-glow' : 'animate-pulse-slow'
+              }`}
               style={{ width: `${progressPercentage}%` }}
             />
+            {/* Sparkle effect for level progress */}
+            {progressPercentage > 50 && (
+              <div className="absolute top-0 left-1/2 w-2 h-2 bg-yellow-300 rounded-full animate-sparkle opacity-70" />
+            )}
           </div>
+          {/* Level up notification */}
+          {showLevelUpAnimation && (
+            <div className="animate-bounce-in bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-sm font-bold py-2 px-4 rounded-lg text-center">
+              🎉 Level Up! You reached Level {stats.currentLevel}! +{pointsGained} points!
+            </div>
+          )}
         </div>
 
         {/* Level Benefits */}
@@ -106,19 +129,31 @@ function RewardsDashboard({ userStats, onRedeemRewards, onAchievementClick }) {
         </div>
         
         <div className="grid grid-cols-3 gap-3">
-          {recentAchievements.map((achievement) => (
+          {recentAchievements.map((achievement, index) => (
             <button
               key={achievement.id}
-              onClick={() => onAchievementClick && onAchievementClick(achievement)}
-              className="flex flex-col items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors animate-fade-in"
+              onClick={() => {
+                onAchievementClick && onAchievementClick(achievement)
+                onShowAchievementModal && onShowAchievementModal(achievement)
+              }}
+              className="flex flex-col items-center p-3 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg hover:from-primary-50 hover:to-secondary-50 hover:scale-105 transition-all duration-300 animate-fade-in group relative"
+              style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="text-2xl mb-2">{achievement.icon}</div>
-              <div className="text-xs font-medium text-gray-900 text-center">
+              {/* Achievement glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary-100 to-secondary-100 rounded-lg opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+              
+              <div className="text-2xl mb-2 group-hover:animate-bounce">{achievement.icon}</div>
+              <div className="text-xs font-medium text-gray-900 text-center group-hover:text-primary-700 transition-colors">
                 {achievement.name}
               </div>
               <div className="text-xs text-gray-500 mt-1">
                 {new Date(achievement.date).toLocaleDateString()}
               </div>
+              
+              {/* New achievement indicator */}
+              {achievement.isNew && (
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+              )}
             </button>
           ))}
         </div>
@@ -152,17 +187,21 @@ function RewardsDashboard({ userStats, onRedeemRewards, onAchievementClick }) {
             <span className="text-gray-600">
               {stats.weeklyChallenge.progress} / {stats.weeklyChallenge.target} completed
             </span>
-            <span className="text-orange-600 font-medium">
-              {stats.weeklyChallenge.timeLeft} left
+            <span className="text-orange-600 font-medium animate-pulse">
+              ⏰ {stats.weeklyChallenge.timeLeft} left
             </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
             <div
-              className="bg-gradient-to-r from-orange-400 to-yellow-500 h-2 rounded-full transition-all duration-500 ease-out"
+              className="bg-gradient-to-r from-orange-400 to-yellow-500 h-2 rounded-full transition-all duration-500 ease-out animate-pulse-slow"
               style={{ 
                 width: `${(stats.weeklyChallenge.progress / stats.weeklyChallenge.target) * 100}%` 
               }}
             />
+            {/* Progress sparkle */}
+            {stats.weeklyChallenge.progress > 0 && (
+              <div className="absolute top-0 right-2 w-1 h-1 bg-yellow-300 rounded-full animate-sparkle" />
+            )}
           </div>
         </div>
 
@@ -195,11 +234,21 @@ function RewardsDashboard({ userStats, onRedeemRewards, onAchievementClick }) {
       {/* Redeem Rewards Button */}
       <button
         onClick={onRedeemRewards}
-        className="w-full btn-primary flex items-center justify-center space-x-2 animate-bounce-in"
+        className="w-full btn-primary flex items-center justify-center space-x-2 animate-bounce-in hover:animate-scale-bounce relative overflow-hidden group"
       >
-        <Gift size={20} />
-        <span>Redeem Rewards</span>
-        <ChevronRight size={16} />
+        {/* Animated background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary-600 via-secondary-500 to-primary-600 bg-size-200 animate-shimmer group-hover:animate-pulse opacity-0 group-hover:opacity-20 transition-opacity" />
+        
+        <Gift size={20} className="group-hover:animate-bounce" />
+        <span className="font-semibold">Redeem Rewards</span>
+        <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+        
+        {/* Reward count indicator */}
+        {earnedAchievements.length > 0 && (
+          <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+            {earnedAchievements.length}
+          </div>
+        )}
       </button>
     </div>
   )

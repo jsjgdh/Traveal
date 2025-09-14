@@ -158,13 +158,17 @@ function WeeklyChallenges({ challenges, onChallengeClick, userProgress }) {
           </div>
         </div>
         
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
           <div
-            className="bg-gradient-to-r from-primary-500 to-secondary-500 h-2 rounded-full transition-all duration-500"
+            className="bg-gradient-to-r from-primary-500 to-secondary-500 h-2 rounded-full transition-all duration-500 animate-pulse-slow"
             style={{ 
               width: `${(getTotalEarnedRewards() / getTotalPossibleRewards()) * 100}%` 
             }}
           />
+          {/* Progress sparkle effect */}
+          {getTotalEarnedRewards() > 0 && (
+            <div className="absolute top-0 right-1 w-1 h-1 bg-yellow-300 rounded-full animate-sparkle" />
+          )}
         </div>
       </div>
 
@@ -178,19 +182,23 @@ function WeeklyChallenges({ challenges, onChallengeClick, userProgress }) {
             <button
               key={challenge.id}
               onClick={() => onChallengeClick && onChallengeClick(challenge)}
-              className="w-full card hover:shadow-lg transition-all duration-200 text-left"
+              className="w-full card hover:shadow-lg transition-all duration-300 text-left group hover:scale-102 hover:animate-glow"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-start space-x-3">
-                  <div className="text-2xl">{challenge.icon}</div>
+                  <div className="text-2xl group-hover:animate-bounce transition-all duration-300">
+                    {challenge.icon}
+                  </div>
                   <div className="flex-1">
                     <div className="flex items-center space-x-2 mb-1">
-                      <h3 className="font-semibold text-gray-900">{challenge.name}</h3>
+                      <h3 className="font-semibold text-gray-900 group-hover:text-primary-700 transition-colors">
+                        {challenge.name}
+                      </h3>
                       {isCompleted && (
-                        <CheckCircle size={16} className="text-green-500" />
+                        <CheckCircle size={16} className="text-green-500 animate-bounce-in" />
                       )}
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">
+                    <p className="text-sm text-gray-600 mb-2 group-hover:text-gray-700 transition-colors">
                       {challenge.description}
                     </p>
                     
@@ -207,11 +215,11 @@ function WeeklyChallenges({ challenges, onChallengeClick, userProgress }) {
                 </div>
                 
                 <div className="text-right ml-4">
-                  <div className="flex items-center space-x-1 text-primary-600 font-semibold">
-                    <Star size={14} />
+                  <div className="flex items-center space-x-1 text-primary-600 font-semibold group-hover:text-primary-700 transition-colors">
+                    <Star size={14} className="group-hover:animate-sparkle" />
                     <span className="text-sm">+{challenge.reward}</span>
                   </div>
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="text-xs text-gray-500 mt-1 group-hover:text-gray-600 transition-colors">
                     {Math.floor((challenge.endDate - new Date()) / (1000 * 60 * 60 * 24))}d left
                   </div>
                 </div>
@@ -231,7 +239,7 @@ function WeeklyChallenges({ challenges, onChallengeClick, userProgress }) {
                   </span>
                 </div>
                 
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-gray-200 rounded-full h-2 relative overflow-hidden">
                   <div
                     className={`h-2 rounded-full transition-all duration-500 ${
                       isCompleted 
@@ -240,30 +248,42 @@ function WeeklyChallenges({ challenges, onChallengeClick, userProgress }) {
                     }`}
                     style={{ width: `${progressPercentage}%` }}
                   />
+                  {/* Progress indicator sparkle */}
+                  {progressPercentage > 0 && progressPercentage < 100 && (
+                    <div 
+                      className="absolute top-0 w-1 h-1 bg-yellow-300 rounded-full animate-sparkle"
+                      style={{ left: `${Math.max(progressPercentage - 5, 0)}%` }}
+                    />
+                  )}
                 </div>
               </div>
 
               {/* Completion Status */}
               {isCompleted && (
-                <div className="mt-3 p-2 bg-green-50 text-green-700 rounded-lg text-sm text-center font-medium animate-bounce-in">
-                  🎉 Challenge Complete! Tap to claim reward
+                <div className="mt-3 p-2 bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 rounded-lg text-sm text-center font-medium animate-bounce-in border border-green-200">
+                  🎉 Challenge Complete! Tap to claim your {challenge.reward} points reward
                 </div>
               )}
+              
+              {/* Hover effect overlay */}
+              <div className="absolute inset-0 bg-gradient-to-r from-primary-50 to-secondary-50 rounded-lg opacity-0 group-hover:opacity-5 transition-opacity duration-300" />
             </button>
           )
         })}
       </div>
 
       {/* Next Week Preview */}
-      <div className="card bg-gray-50 border-dashed border-2 border-gray-300">
+      <div className="card bg-gradient-to-br from-gray-50 to-gray-100 border-dashed border-2 border-gray-300 hover:border-gray-400 hover:shadow-md transition-all duration-300 group">
         <div className="text-center">
-          <Calendar size={32} className="text-gray-400 mx-auto mb-2" />
-          <h3 className="font-semibold text-gray-700 mb-1">Next Week's Challenges</h3>
-          <p className="text-sm text-gray-500 mb-3">
+          <Calendar size={32} className="text-gray-400 mx-auto mb-2 group-hover:text-gray-500 transition-colors" />
+          <h3 className="font-semibold text-gray-700 mb-1 group-hover:text-gray-800 transition-colors">
+            Next Week's Challenges
+          </h3>
+          <p className="text-sm text-gray-500 mb-3 group-hover:text-gray-600 transition-colors">
             Complete this week's challenges to unlock next week's rewards
           </p>
-          <button className="text-primary-600 text-sm font-medium hover:text-primary-700 transition-colors">
-            Preview Challenges <ChevronRight size={14} className="inline ml-1" />
+          <button className="text-primary-600 text-sm font-medium hover:text-primary-700 transition-colors hover:animate-scale-bounce">
+            Preview Challenges <ChevronRight size={14} className="inline ml-1 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
       </div>

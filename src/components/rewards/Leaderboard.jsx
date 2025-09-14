@@ -92,24 +92,24 @@ function Leaderboard({ currentUser, isPrivacyMode = true, onPrivacyToggle }) {
         
         <button
           onClick={onPrivacyToggle}
-          className="flex items-center space-x-2 px-3 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+          className="flex items-center space-x-2 px-3 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 hover:scale-105 transition-all duration-200 group"
         >
-          {isPrivacyMode ? <EyeOff size={16} /> : <Eye size={16} />}
-          <span className="text-sm">
-            {isPrivacyMode ? 'Anonymous' : 'Show Names'}
+          {isPrivacyMode ? <EyeOff size={16} className="group-hover:animate-bounce" /> : <Eye size={16} className="group-hover:animate-bounce" />}
+          <span className="text-sm font-medium">
+            {isPrivacyMode ? 'Anonymous Mode' : 'Show Names'}
           </span>
         </button>
       </div>
 
       {/* Privacy Notice */}
       {isPrivacyMode && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 animate-fade-in">
           <div className="flex items-start space-x-2">
-            <div className="text-blue-500 mt-0.5">🔐</div>
+            <div className="text-blue-500 mt-0.5 animate-pulse">🔐</div>
             <div>
               <div className="text-sm font-medium text-blue-900">Privacy Mode Active</div>
               <div className="text-xs text-blue-700 mt-1">
-                Usernames are anonymized. Only your own position is shown.
+                Usernames are anonymized to protect privacy. Only your position is visible.
               </div>
             </div>
           </div>
@@ -164,28 +164,30 @@ function Leaderboard({ currentUser, isPrivacyMode = true, onPrivacyToggle }) {
 
       {/* Current User Highlight */}
       {currentUserRank && (
-        <div className="card bg-gradient-to-r from-primary-50 to-secondary-50 border border-primary-200">
+        <div className="card bg-gradient-to-r from-primary-50 to-secondary-50 border border-primary-200 animate-fade-in hover:shadow-lg transition-all duration-300 group">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center ${getRankBadge(currentUserRank.rank)}`}>
+              <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all duration-300 group-hover:scale-110 ${getRankBadge(currentUserRank.rank)}`}>
                 {getRankIcon(currentUserRank.rank)}
               </div>
               <div>
-                <div className="font-semibold text-gray-900">Your Rank</div>
-                <div className="text-sm text-gray-600">
+                <div className="font-semibold text-gray-900 group-hover:text-primary-700 transition-colors">
+                  Your Current Rank
+                </div>
+                <div className="text-sm text-gray-600 group-hover:text-gray-700 transition-colors">
                   #{currentUserRank.rank} this {timeframe}
                 </div>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-lg font-bold text-primary-600">
+              <div className="text-lg font-bold text-primary-600 group-hover:text-primary-700 transition-colors">
                 {currentUserRank[category] || currentUserRank.points}
                 <span className="text-sm text-gray-500 ml-1">
                   {categories.find(c => c.id === category)?.suffix}
                 </span>
               </div>
               {currentUserRank.change && (
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-gray-600 group-hover:animate-bounce">
                   {getTrendIcon(currentUserRank.change)} {currentUserRank.change}
                 </div>
               )}
@@ -199,15 +201,16 @@ function Leaderboard({ currentUser, isPrivacyMode = true, onPrivacyToggle }) {
         {leaderboardData.slice(0, 10).map((user, index) => (
           <div
             key={`${user.rank}-${user.username}`}
-            className={`flex items-center justify-between p-4 rounded-lg border transition-all hover:shadow-sm ${
+            className={`flex items-center justify-between p-4 rounded-lg border transition-all duration-300 hover:shadow-sm group animate-fade-in ${
               user.isCurrentUser 
-                ? 'bg-primary-50 border-primary-200 ring-2 ring-primary-100' 
-                : 'bg-white border-gray-200'
+                ? 'bg-primary-50 border-primary-200 ring-2 ring-primary-100 hover:shadow-md' 
+                : 'bg-white border-gray-200 hover:bg-gray-50'
             }`}
+            style={{ animationDelay: `${index * 50}ms` }}
           >
             <div className="flex items-center space-x-3">
               {/* Rank */}
-              <div className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm font-medium ${
+              <div className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm font-medium transition-all duration-300 group-hover:scale-110 ${
                 user.rank <= 3 ? getRankBadge(user.rank) : 'bg-gray-50 border-gray-200 text-gray-600'
               }`}>
                 {user.rank <= 3 ? getRankIcon(user.rank) : `#${user.rank}`}
@@ -215,12 +218,16 @@ function Leaderboard({ currentUser, isPrivacyMode = true, onPrivacyToggle }) {
 
               {/* Avatar & Info */}
               <div className="flex items-center space-x-3">
-                <div className="text-2xl">{user.avatar}</div>
+                <div className="text-2xl group-hover:animate-bounce transition-all duration-300">
+                  {user.avatar}
+                </div>
                 <div>
-                  <div className={`font-medium ${user.isCurrentUser ? 'text-primary-700' : 'text-gray-900'}`}>
+                  <div className={`font-medium transition-colors ${
+                    user.isCurrentUser ? 'text-primary-700 group-hover:text-primary-800' : 'text-gray-900 group-hover:text-gray-800'
+                  }`}>
                     {getDisplayName(user)}
                   </div>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-gray-500 group-hover:text-gray-600 transition-colors">
                     Level {user.level}
                   </div>
                 </div>
@@ -229,14 +236,14 @@ function Leaderboard({ currentUser, isPrivacyMode = true, onPrivacyToggle }) {
 
             {/* Score & Change */}
             <div className="text-right">
-              <div className="font-semibold text-gray-900">
+              <div className="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors">
                 {user[category] || user.points}
                 <span className="text-sm text-gray-500 ml-1">
                   {categories.find(c => c.id === category)?.suffix}
                 </span>
               </div>
               {user.change && (
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-500 group-hover:animate-bounce transition-all">
                   {getTrendIcon(user.change)} {user.change}
                 </div>
               )}
@@ -246,21 +253,23 @@ function Leaderboard({ currentUser, isPrivacyMode = true, onPrivacyToggle }) {
       </div>
 
       {/* Community Stats */}
-      <div className="card bg-gray-50">
+      <div className="card bg-gradient-to-br from-gray-50 to-gray-100 hover:shadow-md transition-all duration-300 group">
         <div className="text-center">
-          <Users size={24} className="text-gray-400 mx-auto mb-2" />
-          <h3 className="font-semibold text-gray-700 mb-1">Community Stats</h3>
+          <Users size={24} className="text-gray-400 mx-auto mb-2 group-hover:text-gray-500 transition-colors" />
+          <h3 className="font-semibold text-gray-700 mb-1 group-hover:text-gray-800 transition-colors">
+            Community Stats
+          </h3>
           <div className="grid grid-cols-3 gap-4 text-sm">
-            <div>
-              <div className="font-bold text-gray-900">1,247</div>
+            <div className="group-hover:animate-scale-bounce transition-all duration-200">
+              <div className="font-bold text-gray-900 text-lg">1,247</div>
               <div className="text-gray-600">Active Users</div>
             </div>
-            <div>
-              <div className="font-bold text-gray-900">15,632</div>
+            <div className="group-hover:animate-scale-bounce transition-all duration-200" style={{ animationDelay: '100ms' }}>
+              <div className="font-bold text-gray-900 text-lg">15,632</div>
               <div className="text-gray-600">Total Trips</div>
             </div>
-            <div>
-              <div className="font-bold text-gray-900">42,891</div>
+            <div className="group-hover:animate-scale-bounce transition-all duration-200" style={{ animationDelay: '200ms' }}>
+              <div className="font-bold text-gray-900 text-lg">42,891</div>
               <div className="text-gray-600">km Tracked</div>
             </div>
           </div>

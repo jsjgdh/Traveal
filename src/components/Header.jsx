@@ -1,8 +1,13 @@
+import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
+import { Bell, Settings } from 'lucide-react'
+import { useNotifications, NotificationCenter } from './notifications'
 
 function Header() {
   const location = useLocation()
   const isHomePage = location.pathname === '/'
+  const { unreadCount } = useNotifications()
+  const [showNotificationCenter, setShowNotificationCenter] = useState(false)
 
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
@@ -21,19 +26,41 @@ function Header() {
             </div>
           </div>
           
-          {!isHomePage && (
-            <button 
-              onClick={() => window.history.back()}
-              className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
-              aria-label="Go back"
+          <div className="flex items-center space-x-2">
+            {/* Notification Bell */}
+            <button
+              onClick={() => setShowNotificationCenter(true)}
+              className="relative p-2 text-gray-600 hover:text-gray-900 transition-colors"
+              aria-label="Notifications"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
+              <Bell size={20} />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
             </button>
-          )}
+            
+            {!isHomePage && (
+              <button 
+                onClick={() => window.history.back()}
+                className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
+                aria-label="Go back"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
       </div>
+      
+      {/* Notification Center */}
+      <NotificationCenter
+        isOpen={showNotificationCenter}
+        onClose={() => setShowNotificationCenter(false)}
+      />
     </header>
   )
 }
