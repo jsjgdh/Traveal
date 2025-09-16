@@ -18,29 +18,31 @@
   }
   
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 shadow-sm;
+    @apply bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 shadow-sm;
   }
   
   .btn-secondary {
-    @apply bg-white hover:bg-gray-50 text-primary-600 font-medium py-3 px-6 rounded-lg border border-primary-200 transition-colors duration-200 shadow-sm;
+    @apply bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-primary-600 dark:text-primary-400 font-medium py-3 px-6 rounded-lg border border-primary-200 dark:border-primary-700 transition-colors duration-200 shadow-sm;
   }
   
   .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200;
+    @apply bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md transition-all duration-200;
   }
   
   .mobile-container {
-    @apply max-w-sm mx-auto min-h-screen bg-white;
+    @apply max-w-sm mx-auto min-h-screen bg-white dark:bg-gray-900;
+    transition: background-color 0.3s ease;
   }
 
   .dashboard-card {
-    @apply bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300;
+    @apply bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 hover:shadow-xl transition-all duration-300;
   }
 
   .status-indicator {
@@ -104,9 +106,9 @@
   }
 
   .input-enhanced {
-    @apply border border-gray-300 rounded-md px-3 py-2;
+    @apply border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100;
     @apply transition-all duration-200 ease-out;
-    @apply focus:border-blue-500 focus:ring-2 focus:ring-blue-200;
+    @apply focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800;
   }
 
   .focus-ring {
@@ -314,6 +316,61 @@
   .loading-skeleton {
     background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
   }
+}
+
+/* Enhanced dark mode styles for manual dark mode */
+.dark .mobile-container {
+  @apply bg-gray-900 text-gray-100;
+}
+
+.dark .card-enhanced {
+  @apply bg-gray-800 border-gray-700;
+}
+
+.dark .input-enhanced {
+  @apply bg-gray-800 border-gray-700 text-gray-100;
+}
+
+.dark .loading-skeleton {
+  background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+}
+
+/* Dark mode text colors */
+.dark .text-gray-900 {
+  @apply text-gray-100;
+}
+
+.dark .text-gray-800 {
+  @apply text-gray-200;
+}
+
+.dark .text-gray-700 {
+  @apply text-gray-300;
+}
+
+.dark .text-gray-600 {
+  @apply text-gray-400;
+}
+
+.dark .text-gray-500 {
+  @apply text-gray-400;
+}
+
+/* Dark mode background colors */
+.dark .bg-gray-50 {
+  @apply bg-gray-900;
+}
+
+.dark .bg-gray-100 {
+  @apply bg-gray-800;
+}
+
+.dark .bg-gray-200 {
+  @apply bg-gray-700;
+}
+
+.dark .bg-white {
+  @apply bg-gray-800;
 }
 
 /* Print styles for government compliance */

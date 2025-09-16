@@ -1,6 +1,7 @@
 // Shared Components Export
 export { default as ChartComponents } from './ChartComponents'
 export * from './ChartComponents'
+export { default as ThemeToggle } from './ThemeToggle'
 
 // Enhanced UX Components
 export * from './EnhancedRouter'

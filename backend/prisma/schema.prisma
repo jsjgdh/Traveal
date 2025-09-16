@@ -1,0 +1,113 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  uuid        String   @unique // Anonymous identifier
+  deviceId    String?  @unique
+  consentData String   // Privacy consent data (JSON string)
+  onboarded   Boolean  @default(false)
+  preferences String?  // User preferences (JSON string)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  trips          Trip[]
+  notifications  Notification[]
+  analyticsEvents AnalyticsEvent[]
+
+  @@map("users")
+}
+
+model Trip {
+  id              String    @id @default(cuid())
+  userId          String
+  startLatitude   Float
+  startLongitude  Float
+  endLatitude     Float?
+  endLongitude    Float?
+  startAddress    String?
+  endAddress      String?
+  startTime       DateTime
+  endTime         DateTime?
+  distance        Float?
+  mode            String?   // walking, driving, public_transport, cycling
+  purpose         String?   // work, school, shopping, other
+  companions      Int       @default(0)
+  validated       Boolean   @default(false)
+  isActive        Boolean   @default(false)
+  anonymizedData  String?   // JSON string
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  locationPoints  LocationPoint[]
+
+  @@map("trips")
+}
+
+model LocationPoint {
+  id        String   @id @default(cuid())
+  tripId    String
+  latitude  Float
+  longitude Float
+  accuracy  Float?
+  speed     Float?
+  altitude  Float?
+  timestamp DateTime
+  createdAt DateTime @default(now())
+
+  // Relations
+  trip      Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@map("location_points")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // trip_validation, achievement, system, etc.
+  title     String
+  message   String
+  data      String?  // JSON string
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model AnalyticsEvent {
+  id          String   @id @default(cuid())
+  userId      String?  // Optional for anonymous events
+  eventType   String
+  eventData   String   // JSON string
+  anonymized  Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  // Relations
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("analytics_events")
+}
+
+model AppConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   // JSON string
+  updatedAt DateTime @updatedAt
+
+  @@map("app_config")
+}

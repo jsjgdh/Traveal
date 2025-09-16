@@ -72,8 +72,8 @@ function SettingsMenu() {
         <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-2xl flex items-center justify-center mx-auto">
           <Settings2 size={24} className="text-white" />
         </div>
-        <h2 className="text-xl font-bold text-gray-900">Settings</h2>
-        <p className="text-sm text-gray-600">Customize your Travel experience</p>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Settings</h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400">Customize your Travel experience</p>
       </div>
 
       {/* Settings Sections */}
@@ -91,22 +91,22 @@ function SettingsMenu() {
               </div>
               
               <div className="flex-1 text-left">
-                <h3 className="font-semibold text-gray-900">{section.title}</h3>
-                <p className="text-sm text-gray-600">{section.description}</p>
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100">{section.title}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{section.description}</p>
               </div>
               
-              <ChevronRight size={20} className="text-gray-400" />
+              <ChevronRight size={20} className="text-gray-400 dark:text-gray-500" />
             </button>
           )
         })}
       </div>
 
       {/* App Info */}
-      <div className="card bg-gray-50 border-gray-200">
+      <div className="card bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700">
         <div className="text-center space-y-2">
-          <h3 className="font-semibold text-gray-900">Travel Data Collection</h3>
-          <p className="text-sm text-gray-600">Version 1.0.0</p>
-          <p className="text-xs text-gray-500">
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100">Travel Data Collection</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Version 1.0.0</p>
+          <p className="text-xs text-gray-500 dark:text-gray-500">
             NATPAC • Kerala Transportation Research
           </p>
         </div>

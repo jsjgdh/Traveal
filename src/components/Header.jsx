@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { Bell, Settings } from 'lucide-react'
 import { useNotifications, NotificationCenter } from './notifications'
+import ThemeToggle from './shared/ThemeToggle'
 
 function Header() {
   const location = useLocation()
@@ -10,7 +11,7 @@ function Header() {
   const [showNotificationCenter, setShowNotificationCenter] = useState(false)
 
   return (
-    <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
+    <header className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 sticky top-0 z-50 transition-colors duration-300">
       <div className="px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -21,16 +22,19 @@ function Header() {
               </svg>
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-gray-900">NATPAC</h1>
-              <p className="text-xs text-gray-500">Travel Data Collection</p>
+              <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">NATPAC</h1>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Travel Data Collection</p>
             </div>
           </div>
           
           <div className="flex items-center space-x-2">
+            {/* Theme Toggle */}
+            <ThemeToggle showLabel={false} size="sm" />
+            
             {/* Notification Bell */}
             <button
               onClick={() => setShowNotificationCenter(true)}
-              className="relative p-2 text-gray-600 hover:text-gray-900 transition-colors"
+              className="relative p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
               aria-label="Notifications"
             >
               <Bell size={20} />
@@ -44,7 +48,7 @@ function Header() {
             {!isHomePage && (
               <button 
                 onClick={() => window.history.back()}
-                className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
+                className="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
                 aria-label="Go back"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

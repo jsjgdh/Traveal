@@ -3,22 +3,22 @@ function SetupCompleteStep({ onComplete, onPrevious, consentData }) {
     const permissions = []
     
     if (consentData.locationData.allowTracking) {
-      permissions.push('Location Tracking')
+      permissions.push({ name: 'Location Tracking', icon: '📍', essential: true })
     }
     if (consentData.locationData.preciseLocation) {
-      permissions.push('Precise Location')
+      permissions.push({ name: 'Precise Location', icon: '🎯', essential: false })
     }
     if (consentData.sensorData.motionSensors) {
-      permissions.push('Motion Sensors')
+      permissions.push({ name: 'Motion Sensors', icon: '📱', essential: false })
     }
     if (consentData.sensorData.activityDetection) {
-      permissions.push('Activity Detection')
+      permissions.push({ name: 'Activity Detection', icon: '🚶', essential: false })
     }
     if (consentData.usageAnalytics.anonymousStats) {
-      permissions.push('Usage Analytics')
+      permissions.push({ name: 'Usage Analytics', icon: '📊', essential: false })
     }
     if (consentData.usageAnalytics.crashReports) {
-      permissions.push('Crash Reports')
+      permissions.push({ name: 'Crash Reports', icon: '🔧', essential: false })
     }
     
     return permissions
@@ -28,114 +28,128 @@ function SetupCompleteStep({ onComplete, onPrevious, consentData }) {
 
   return (
     <div className="space-y-8 text-center">
-      {/* Success Icon */}
+      {/* Success Animation */}
       <div className="flex justify-center">
-        <div className="w-24 h-24 bg-gradient-to-br from-secondary-500 to-primary-500 rounded-full flex items-center justify-center shadow-xl animate-bounce">
-          <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
+        <div className="relative">
+          <div className="w-32 h-32 bg-gradient-to-br from-green-400 via-green-500 to-green-600 rounded-full flex items-center justify-center shadow-2xl animate-bounce">
+            <svg className="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          {/* Celebration particles */}
+          <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full animate-ping"></div>
+          <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-blue-400 rounded-full animate-pulse"></div>
         </div>
       </div>
 
       {/* Success Message */}
-      <div className="space-y-3">
-        <h1 className="text-3xl font-bold text-gray-900">
-          All Set!
+      <div className="space-y-4">
+        <h1 className="text-4xl font-bold text-gray-900">
+          🎉 You're All Set!
         </h1>
-        <p className="text-lg text-gray-600">
-          Your NATPAC Travel Data Collection app is ready to use.
+        <p className="text-xl text-gray-600 max-w-md mx-auto">
+          Welcome to Traveal! Your smart travel companion is ready to start collecting meaningful data.
         </p>
       </div>
 
       {/* Granted Permissions Summary */}
-      <div className="card text-left">
-        <h3 className="font-semibold text-gray-900 mb-4 text-center">
-          Permissions Granted
+      <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-6 border-2 border-green-200">
+        <h3 className="font-bold text-gray-900 mb-6 text-xl">
+          ✅ Active Permissions
         </h3>
-        <div className="space-y-2">
+        <div className="grid gap-3">
           {grantedPermissions.map((permission, index) => (
-            <div key={index} className="flex items-center space-x-3">
-              <svg className="w-5 h-5 text-secondary-600" fill="currentColor" viewBox="0 0 20 20">
+            <div key={index} className="flex items-center justify-between p-4 bg-white rounded-xl shadow-sm border border-gray-100">
+              <div className="flex items-center space-x-3">
+                <span className="text-2xl">{permission.icon}</span>
+                <div className="text-left">
+                  <span className="font-medium text-gray-900">{permission.name}</span>
+                  {permission.essential && (
+                    <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium">Essential</span>
+                  )}
+                </div>
+              </div>
+              <svg className="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
-              <span className="text-gray-700">{permission}</span>
             </div>
           ))}
         </div>
         
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <p className="text-xs text-gray-500 text-center">
-            You can modify these permissions anytime in the app settings.
+        <div className="mt-6 p-4 bg-blue-100 rounded-xl">
+          <p className="text-sm text-blue-800 font-medium">💡 Pro Tip</p>
+          <p className="text-sm text-blue-700 mt-1">
+            You can modify these permissions anytime by visiting Settings → Privacy & Data.
           </p>
         </div>
       </div>
 
-      {/* What's Next */}
-      <div className="space-y-4 text-left">
-        <h3 className="font-semibold text-gray-900 text-center">What's Next?</h3>
+      {/* What's Next Guide */}
+      <div className="bg-white rounded-2xl p-6 border-2 border-gray-200">
+        <h3 className="font-bold text-gray-900 text-xl mb-6">🚀 What Happens Next?</h3>
         
-        <div className="space-y-3">
-          <div className="flex items-start space-x-3 p-3 bg-primary-50 rounded-lg">
-            <div className="w-8 h-8 bg-primary-600 text-white rounded-lg flex items-center justify-center text-sm font-semibold flex-shrink-0">
+        <div className="space-y-4">
+          <div className="flex items-start space-x-4 p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl">
+            <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center text-lg font-bold flex-shrink-0">
               1
             </div>
-            <div>
-              <p className="font-medium text-gray-900">Start Collecting Data</p>
-              <p className="text-sm text-gray-600">The app will automatically detect your trips in the background.</p>
+            <div className="text-left">
+              <p className="font-semibold text-gray-900 text-lg">🔄 Automatic Detection</p>
+              <p className="text-gray-700">Your phone will quietly track trips in the background - no effort required!</p>
             </div>
           </div>
 
-          <div className="flex items-start space-x-3 p-3 bg-secondary-50 rounded-lg">
-            <div className="w-8 h-8 bg-secondary-600 text-white rounded-lg flex items-center justify-center text-sm font-semibold flex-shrink-0">
+          <div className="flex items-start space-x-4 p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl">
+            <div className="w-10 h-10 bg-green-600 text-white rounded-full flex items-center justify-center text-lg font-bold flex-shrink-0">
               2
             </div>
-            <div>
-              <p className="font-medium text-gray-900">Review Your Trips</p>
-              <p className="text-sm text-gray-600">Verify and add details to automatically detected trips.</p>
+            <div className="text-left">
+              <p className="font-semibold text-gray-900 text-lg">✏️ Quick Validation</p>
+              <p className="text-gray-700">Review detected trips and add details like purpose and companions in seconds.</p>
             </div>
           </div>
 
-          <div className="flex items-start space-x-3 p-3 bg-primary-50 rounded-lg">
-            <div className="w-8 h-8 bg-primary-600 text-white rounded-lg flex items-center justify-center text-sm font-semibold flex-shrink-0">
+          <div className="flex items-start space-x-4 p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl">
+            <div className="w-10 h-10 bg-purple-600 text-white rounded-full flex items-center justify-center text-lg font-bold flex-shrink-0">
               3
             </div>
-            <div>
-              <p className="font-medium text-gray-900">Make an Impact</p>
-              <p className="text-sm text-gray-600">Your data contributes to better transportation planning for Kerala.</p>
+            <div className="text-left">
+              <p className="font-semibold text-gray-900 text-lg">🌍 Make Impact</p>
+              <p className="text-gray-700">Your anonymous data helps improve transportation planning across Kerala!</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Action Buttons */}
-      <div className="flex space-x-3 pt-4">
-        <button
-          onClick={onPrevious}
-          className="btn-secondary flex-1"
-        >
-          Back
-        </button>
+      <div className="space-y-4 pt-6">
         <button
           onClick={onComplete}
-          className="btn-primary flex-1 text-lg py-4 transform hover:scale-105 transition-transform duration-200"
+          className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-bold py-5 px-8 rounded-2xl text-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200"
         >
-          Start Using App
-          <svg className="w-5 h-5 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-          </svg>
+          <div className="flex items-center justify-center space-x-3">
+            <span>🚀 Start My Journey</span>
+          </div>
+        </button>
+        
+        <button
+          onClick={onPrevious}
+          className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-xl transition-all duration-200"
+        >
+          ← Back to Settings
         </button>
       </div>
 
-      {/* Privacy Reminder */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <div className="flex items-center space-x-2 justify-center">
-          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+      {/* Final Privacy Assurance */}
+      <div className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-2xl p-6">
+        <div className="flex items-center justify-center space-x-3 mb-3">
+          <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
           </svg>
-          <p className="text-sm text-blue-800 font-medium">Your privacy is protected</p>
+          <h4 className="text-lg font-bold text-green-800">🔒 Privacy Promise</h4>
         </div>
-        <p className="text-xs text-blue-700 text-center mt-1">
-          All data is anonymized and used only for transportation research
+        <p className="text-green-700 text-center">
+          Your data is <strong>fully anonymized</strong>, <strong>encrypted</strong>, and used exclusively for transportation research. No personal information is ever shared.
         </p>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ProgressBar from './ProgressBar'
 import WelcomeStep from './WelcomeStep'
 import PrivacyConsentStep from './PrivacyConsentStep'
@@ -27,15 +27,54 @@ function OnboardingFlow({ onComplete }) {
     }
   })
 
+  // For debugging - log current state
+  console.log(`OnboardingFlow rendered - currentStep: ${currentStep}, stepId: ${STEPS[currentStep]?.id}`)
+
+  // Development helper - press Ctrl+R to reset onboarding
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (process.env.NODE_ENV === 'development' && e.ctrlKey && e.key === 'r') {
+        console.log('Development: Resetting onboarding flow')
+        localStorage.removeItem('natpac_onboarded')
+        localStorage.removeItem('natpac_consent')
+        setCurrentStep(0)
+        setConsentData({
+          locationData: {
+            allowTracking: false,
+            preciseLocation: false
+          },
+          sensorData: {
+            motionSensors: false,
+            activityDetection: false
+          },
+          usageAnalytics: {
+            anonymousStats: false,
+            crashReports: false
+          }
+        })
+        e.preventDefault()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [])
+
   const handleNext = () => {
+    console.log(`OnboardingFlow - handleNext called, currentStep: ${currentStep}, maxStep: ${STEPS.length - 1}`)
     if (currentStep < STEPS.length - 1) {
-      setCurrentStep(currentStep + 1)
+      const newStep = currentStep + 1
+      console.log(`OnboardingFlow - Moving to step ${newStep}: ${STEPS[newStep].title}`)
+      setCurrentStep(newStep)
     }
   }
 
   const handlePrevious = () => {
+    console.log(`OnboardingFlow - handlePrevious called, currentStep: ${currentStep}`)
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1)
+      const newStep = currentStep - 1
+      console.log(`OnboardingFlow - Moving to step ${newStep}: ${STEPS[newStep].title}`)
+      setCurrentStep(newStep)
     }
   }
 
@@ -58,8 +97,18 @@ function OnboardingFlow({ onComplete }) {
 
   const isRequiredConsentsGiven = () => {
     // Required: Location tracking and at least one sensor permission
-    return consentData.locationData.allowTracking && 
-           (consentData.sensorData.motionSensors || consentData.sensorData.activityDetection)
+    const hasLocationTracking = consentData.locationData.allowTracking
+    const hasSensorPermission = consentData.sensorData.motionSensors || consentData.sensorData.activityDetection
+    const isValid = hasLocationTracking && hasSensorPermission
+    
+    console.log('OnboardingFlow - Checking consent validation:', {
+      hasLocationTracking,
+      hasSensorPermission,
+      isValid,
+      consentData
+    })
+    
+    return isValid
   }
 
   const renderStep = () => {

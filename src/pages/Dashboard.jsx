@@ -1,4 +1,4 @@
-import { Bell, Settings, MapPin, Battery, Target, Car, Bus, Footprints, Plus, History, Gift, Share2 } from 'lucide-react'
+import { Bell, Settings, MapPin, Battery, Target, Car, Bus, Footprints, Plus, History, Gift, Share2, Compass, Utensils, Star } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useNotifications, SystemStatusMonitor } from '../components/notifications'
 
@@ -13,7 +13,7 @@ function Dashboard() {
 
   const quickActions = [
     { id: 1, title: 'Manual Trip', icon: Plus, color: 'bg-primary-500', action: () => navigate('/trip-demo') },
-    { id: 2, title: 'View History', icon: History, color: 'bg-secondary-500', action: () => console.log('View History') },
+    { id: 2, title: 'Discover Gems', icon: Compass, color: 'bg-green-500', action: () => navigate('/discover') },
     { id: 3, title: 'Rewards Center', icon: Gift, color: 'bg-purple-500', action: () => navigate('/rewards') },
     { id: 4, title: 'Share Data', icon: Share2, color: 'bg-orange-500', action: () => console.log('Share Data') }
   ]
@@ -193,6 +193,61 @@ function Dashboard() {
               <p className="text-sm text-gray-600">Level up! You reached Bronze tier</p>
               <span className="text-xs text-gray-400 ml-auto">2d ago</span>
             </div>
+          </div>
+        </div>
+
+        {/* Discover Hidden Gems */}
+        <div className="card">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">Discover Hidden Gems</h3>
+            <button 
+              onClick={() => navigate('/discover')}
+              className="text-blue-600 text-sm hover:underline"
+            >
+              View All
+            </button>
+          </div>
+          
+          <div className="space-y-3">
+            <div 
+              onClick={() => navigate('/discover')}
+              className="flex items-center space-x-4 p-3 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg hover:shadow-md transition-shadow cursor-pointer"
+            >
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                <MapPin size={20} className="text-green-600" />
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-gray-900">Secret Beach at Vypin</p>
+                <p className="text-sm text-gray-600">Hidden pristine beach • 2.3 km away</p>
+                <div className="flex items-center space-x-1 mt-1">
+                  <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                  <span className="text-xs text-gray-600">4.8 rating</span>
+                </div>
+              </div>
+            </div>
+            
+            <div 
+              onClick={() => navigate('/discover')}
+              className="flex items-center space-x-4 p-3 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg hover:shadow-md transition-shadow cursor-pointer"
+            >
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <Utensils size={20} className="text-orange-600" />
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-gray-900">Ammachi's Kitchen</p>
+                <p className="text-sm text-gray-600">Traditional Kerala meals • 1.2 km away</p>
+                <div className="flex items-center space-x-1 mt-1">
+                  <Star className="w-3 h-3 text-yellow-500 fill-current" />
+                  <span className="text-xs text-gray-600">4.9 rating</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+            <p className="text-sm text-blue-800">
+              <strong>Tip:</strong> Discover 12 hidden local attractions and food spots in your area!
+            </p>
           </div>
         </div>
       </main>

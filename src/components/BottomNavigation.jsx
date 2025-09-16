@@ -1,4 +1,4 @@
-import { Home, BarChart3, Gift, User, Settings } from 'lucide-react'
+import { Home, BarChart3, Gift, User, Settings, Compass } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 function BottomNavigation() {
@@ -14,11 +14,11 @@ function BottomNavigation() {
       active: location.pathname === '/dashboard'
     },
     {
-      id: 'data',
-      label: 'Data',
-      icon: BarChart3,
-      path: '/data',
-      active: location.pathname === '/data'
+      id: 'discover',
+      label: 'Discover',
+      icon: Compass,
+      path: '/discover',
+      active: location.pathname === '/discover'
     },
     {
       id: 'rewards',

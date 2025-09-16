@@ -19,6 +19,7 @@ import DataPage from './pages/DataPage'
 import RewardsPage from './pages/RewardsPage'
 import ProfilePage from './pages/ProfilePage'
 import SettingsPage from './pages/SettingsPage'
+import DiscoverPage from './pages/DiscoverPage'
 import TripValidationDemo from './pages/TripValidationDemo'
 import DataAnalyticsDemo from './pages/DataAnalyticsDemo'
 import NotificationDemo from './pages/NotificationDemo'
@@ -26,6 +27,9 @@ import NotificationDemo from './pages/NotificationDemo'
 // Onboarding and Notifications
 import { OnboardingFlow } from './components/onboarding'
 import { NotificationProvider, NotificationBanner, NotificationPermissionFlow } from './components/notifications'
+
+// Theme Context
+import { ThemeProvider } from './contexts/ThemeContext'
 
 // Import test script for development
 if (process.env.NODE_ENV === 'development') {
@@ -101,11 +105,16 @@ function App() {
   }
 
   if (!isOnboarded) {
-    return <OnboardingFlow onComplete={handleOnboardingComplete} />
+    return (
+      <ThemeProvider>
+        <OnboardingFlow onComplete={handleOnboardingComplete} />
+      </ThemeProvider>
+    )
   }
 
   return (
-    <HapticProvider>
+    <ThemeProvider>
+      <HapticProvider>
       <AccessibilityProvider>
         <AppInfoProvider>
           <TooltipProvider>
@@ -129,6 +138,7 @@ function App() {
                             
                             {/* Main app routes with protection and loading */}
                             <Route path="/dashboard" element={<ProtectedRoute><RouteWrapper title="Dashboard"><Dashboard /></RouteWrapper></ProtectedRoute>} />
+                            <Route path="/discover" element={<ProtectedRoute><RouteWrapper title="Discover Gems"><DiscoverPage /></RouteWrapper></ProtectedRoute>} />
                             <Route path="/trip" element={<ProtectedRoute><RouteWrapper title="Trip Management"><TripPage /></RouteWrapper></ProtectedRoute>} />
                             <Route path="/data" element={<ProtectedRoute><RouteWrapper title="Data Analytics"><DataPage /></RouteWrapper></ProtectedRoute>} />
                             <Route path="/rewards" element={<ProtectedRoute><RouteWrapper title="Rewards"><RewardsPage /></RouteWrapper></ProtectedRoute>} />
@@ -167,6 +177,7 @@ function App() {
         </AppInfoProvider>
       </AccessibilityProvider>
     </HapticProvider>
+    </ThemeProvider>
   )
 }
 

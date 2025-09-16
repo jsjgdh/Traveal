@@ -1,0 +1,35 @@
+# Python Analytics Dockerfile
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements first for better caching
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy analytics scripts
+COPY *.py ./
+
+# Create data and logs directories
+RUN mkdir -p data logs
+
+# Create non-root user
+RUN useradd -m -s /bin/bash analytics
+RUN chown -R analytics:analytics /app
+USER analytics
+
+# Health check
+HEALTHCHECK --interval=60s --timeout=10s --start-period=10s --retries=3 \
+  CMD python -c "import sys; sys.exit(0)"
+
+# Default command (can be overridden)
+CMD ["python", "analytics_engine.py"]

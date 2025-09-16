@@ -1,0 +1,122 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: traveal-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-traveal_secure_password_2024}
+      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME:-traveal}
+    volumes:
+      - mongodb_data:/data/db
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    ports:
+      - "27017:27017"
+    networks:
+      - traveal-network
+    command: --auth --bind_ip_all
+
+  # Redis Cache
+  redis:
+    image: redis:7.2-alpine
+    container_name: traveal-redis
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD:-traveal_redis_2024}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - traveal-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: traveal-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 3001
+      MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD:-traveal_secure_password_2024}@mongodb:27017/${MONGO_DB_NAME:-traveal}?authSource=admin
+      REDIS_URL: redis://:${REDIS_PASSWORD:-traveal_redis_2024}@redis:6379
+      JWT_SECRET: ${JWT_SECRET:-your_super_secure_jwt_secret_change_in_production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your_super_secure_refresh_secret_change_in_production}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-your_super_secure_encryption_key_change_in_production}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+      BCRYPT_ROUNDS: ${BCRYPT_ROUNDS:-12}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    ports:
+      - "3001:3001"
+    volumes:
+      - backend_logs:/app/logs
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - traveal-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend (Nginx serving built React app)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: traveal-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - frontend_logs:/var/log/nginx
+    depends_on:
+      - backend
+    networks:
+      - traveal-network
+
+  # Python Analytics Service
+  analytics:
+    build:
+      context: ./scripts
+      dockerfile: Dockerfile.analytics
+    container_name: traveal-analytics
+    restart: unless-stopped
+    environment:
+      TRAVEAL_ENCRYPTION_KEY: ${ENCRYPTION_KEY:-your_super_secure_encryption_key_change_in_production}
+      MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD:-traveal_secure_password_2024}@mongodb:27017/${MONGO_DB_NAME:-traveal}?authSource=admin
+    volumes:
+      - analytics_data:/app/data
+      - analytics_logs:/app/logs
+    depends_on:
+      - mongodb
+    networks:
+      - traveal-network
+
+volumes:
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+  backend_logs:
+    driver: local
+  frontend_logs:
+    driver: local
+  analytics_data:
+    driver: local
+  analytics_logs:
+    driver: local
+
+networks:
+  traveal-network:
+    driver: bridge

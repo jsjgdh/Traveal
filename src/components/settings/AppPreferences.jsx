@@ -12,13 +12,33 @@ import {
   Zap,
   Settings2
 } from 'lucide-react'
+import { useTheme } from '../../contexts/ThemeContext'
 
 function AppPreferences({ onBack }) {
-  const [theme, setTheme] = useState('auto') // 'light', 'dark', 'auto'
+  const { theme, isSystemTheme, setLightTheme, setDarkTheme, setSystemTheme } = useTheme()
   const [language, setLanguage] = useState('en')
   const [batteryMode, setBatteryMode] = useState('balanced') // 'performance', 'balanced', 'saver'
   const [soundEnabled, setSoundEnabled] = useState(true)
   const [hapticEnabled, setHapticEnabled] = useState(true)
+
+  const getCurrentTheme = () => {
+    if (isSystemTheme) return 'auto'
+    return theme
+  }
+
+  const handleThemeChange = (selectedTheme) => {
+    switch (selectedTheme) {
+      case 'light':
+        setLightTheme()
+        break
+      case 'dark':
+        setDarkTheme()
+        break
+      case 'auto':
+        setSystemTheme()
+        break
+    }
+  }
 
   const themeOptions = [
     { value: 'light', label: 'Light', icon: Sun, description: 'Always use light theme' },
@@ -83,22 +103,22 @@ function AppPreferences({ onBack }) {
             return (
               <button
                 key={option.value}
-                onClick={() => setTheme(option.value)}
+                onClick={() => handleThemeChange(option.value)}
                 className={`card p-4 text-left transition-all duration-200 ${
-                  theme === option.value 
-                    ? 'border-primary-500 bg-primary-50' 
-                    : 'hover:shadow-lg'
+                  getCurrentTheme() === option.value 
+                    ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20 dark:border-primary-400' 
+                    : 'hover:shadow-lg dark:hover:bg-gray-700'
                 }`}
               >
                 <div className="flex items-center space-x-3">
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    theme === option.value ? 'bg-primary-500 text-white' : 'bg-gray-100 text-gray-600'
+                    getCurrentTheme() === option.value ? 'bg-primary-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
                   }`}>
                     <IconComponent size={18} />
                   </div>
                   <div>
-                    <h4 className="font-medium text-gray-900">{option.label}</h4>
-                    <p className="text-sm text-gray-600">{option.description}</p>
+                    <h4 className="font-medium text-gray-900 dark:text-gray-100">{option.label}</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{option.description}</p>
                   </div>
                 </div>
               </button>
