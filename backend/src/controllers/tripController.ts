@@ -138,7 +138,7 @@ export class TripController {
     }
 
     // Log analytics event
-    await AnalyticsService.trackTripEvent('trip_updated', trip, userId);
+    await AnalyticsService.trackTripEvent('trip_validated', trip, userId);
 
     logger.info(`Trip updated: ${tripId} by user ${userId}`);
 

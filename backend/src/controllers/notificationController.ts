@@ -89,8 +89,8 @@ export class NotificationController {
 
     // Log analytics event
     await AnalyticsService.trackEngagementEvent(
-      'notifications_clear_all',
-      {},
+      'feature_used',
+      { feature: 'notifications_clear_all' },
       userId
     );
 

@@ -117,3 +117,101 @@ export interface AnalyticsEventData {
   userId?: string;
   anonymized?: boolean;
 }
+
+// SOS Safety Feature Types
+export interface SOSProfileData {
+  id?: string;
+  userId: string;
+  fullPassword: string;
+  partialPassword: string;
+  biometricEnabled: boolean;
+  emergencyContacts: EmergencyContact[];
+  isEnabled: boolean;
+  voiceLanguage: string;
+  backgroundPermissions: boolean;
+}
+
+export interface EmergencyContact {
+  id?: string;
+  name: string;
+  phoneNumber: string;
+  email?: string;
+  relationship: string;
+  priority: number;
+  isActive: boolean;
+}
+
+export interface RouteMonitoringData {
+  id?: string;
+  userId: string;
+  sosProfileId: string;
+  tripId?: string;
+  plannedRoute: LocationPoint[];
+  currentRoute: LocationPoint[];
+  deviationThreshold: number;
+  isActive: boolean;
+  startTime: Date;
+  endTime?: Date;
+  destination: {
+    latitude: number;
+    longitude: number;
+    address?: string;
+  };
+  estimatedArrival?: Date;
+  lastKnownLocation: {
+    latitude: number;
+    longitude: number;
+    timestamp: Date;
+  };
+  deviationDetected: boolean;
+}
+
+export interface SOSAlertData {
+  id?: string;
+  userId: string;
+  sosProfileId: string;
+  routeMonitoringId?: string;
+  alertType: 'route_deviation' | 'manual_trigger' | 'tamper_detection' | 'panic';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  status: 'triggered' | 'grace_period' | 'confirmed' | 'false_alarm' | 'resolved';
+  triggerLocation: {
+    latitude: number;
+    longitude: number;
+    timestamp: Date;
+  };
+  deviationDistance?: number;
+  gracePeriodEnd?: Date;
+  voiceAlertPlayed: boolean;
+  passwordAttempts: number;
+  maxPasswordAttempts: number;
+  isStealthMode: boolean;
+  authoritiesNotified: boolean;
+  contactsNotified: boolean;
+  resolvedAt?: Date;
+  resolvedBy?: string;
+  alertData?: Record<string, any>;
+}
+
+export interface SOSLogData {
+  id?: string;
+  sosAlertId: string;
+  action: string;
+  details: Record<string, any>;
+  timestamp: Date;
+}
+
+export interface VoiceAlertData {
+  messageText: string;
+  language: string;
+  localArea: string;
+  isStealthMode: boolean;
+}
+
+export interface RouteDeviationCheck {
+  currentLocation: LocationPoint;
+  plannedRoute: LocationPoint[];
+  deviationThreshold: number;
+  isDeviated: boolean;
+  deviationDistance?: number;
+  suggestedAction: 'continue' | 'grace_period' | 'trigger_alert';
+}

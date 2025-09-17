@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { config } from './environment';
-import logger from '@/utils/logger';
+import logger from '../utils/logger';
 
 declare global {
   var __prisma: PrismaClient | undefined;

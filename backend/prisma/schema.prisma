@@ -21,9 +21,13 @@ model User {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  trips          Trip[]
-  notifications  Notification[]
-  analyticsEvents AnalyticsEvent[]
+  trips              Trip[]
+  notifications      Notification[]
+  analyticsEvents    AnalyticsEvent[]
+  sosProfile         SOSProfile?
+  routeMonitoring    RouteMonitoring[]
+  sosAlerts          SOSAlert[]
+  emergencyContacts  EmergencyContact[]
 
   @@map("users")
 }
@@ -52,6 +56,7 @@ model Trip {
   // Relations
   user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   locationPoints  LocationPoint[]
+  routeMonitoring RouteMonitoring[]
 
   @@map("trips")
 }
@@ -110,4 +115,116 @@ model AppConfig {
   updatedAt DateTime @updatedAt
 
   @@map("app_config")
+}
+
+// SOS Safety Feature Models
+model SOSProfile {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  fullPassword          String   // Encrypted - stops alarm entirely
+  partialPassword       String   // Encrypted - silences alarm but continues monitoring
+  biometricEnabled      Boolean  @default(false)
+  emergencyContacts     String   // JSON array of contact objects
+  isEnabled             Boolean  @default(false)
+  voiceLanguage         String   @default("en") // Primary language for voice alerts
+  backgroundPermissions Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  // Relations
+  user                 User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sosAlerts            SOSAlert[]
+  routeMonitoring      RouteMonitoring[]
+
+  @@map("sos_profiles")
+}
+
+model RouteMonitoring {
+  id                String   @id @default(cuid())
+  userId            String
+  sosProfileId      String
+  tripId            String?
+  plannedRoute      String   // JSON array of coordinates for planned route
+  currentRoute      String   // JSON array of actual coordinates
+  deviationThreshold Float   @default(500.0) // meters
+  isActive          Boolean  @default(true)
+  startTime         DateTime
+  endTime           DateTime?
+  destination       String   // JSON object with lat, lng, address
+  estimatedArrival  DateTime?
+  lastKnownLocation String   // JSON object with lat, lng, timestamp
+  deviationDetected Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sosProfile        SOSProfile   @relation(fields: [sosProfileId], references: [id], onDelete: Cascade)
+  trip              Trip?        @relation(fields: [tripId], references: [id], onDelete: SetNull)
+  sosAlerts         SOSAlert[]
+
+  @@map("route_monitoring")
+}
+
+model SOSAlert {
+  id                 String   @id @default(cuid())
+  userId             String
+  sosProfileId       String
+  routeMonitoringId  String?
+  alertType          String   // route_deviation, manual_trigger, tamper_detection, panic
+  severity           String   // low, medium, high, critical
+  status             String   // triggered, grace_period, confirmed, false_alarm, resolved
+  triggerLocation    String   // JSON object with lat, lng, timestamp
+  deviationDistance  Float?   // meters from planned route
+  gracePeriodEnd     DateTime?
+  voiceAlertPlayed   Boolean  @default(false)
+  passwordAttempts   Int      @default(0)
+  maxPasswordAttempts Int     @default(3)
+  isStealthMode      Boolean  @default(false)
+  authoritiesNotified Boolean @default(false)
+  contactsNotified   Boolean  @default(false)
+  resolvedAt         DateTime?
+  resolvedBy         String?  // user, contact, authority, auto
+  alertData          String?  // JSON object with additional context
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  // Relations
+  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sosProfile         SOSProfile        @relation(fields: [sosProfileId], references: [id], onDelete: Cascade)
+  routeMonitoring    RouteMonitoring?  @relation(fields: [routeMonitoringId], references: [id], onDelete: SetNull)
+  sosLogs            SOSLog[]
+
+  @@map("sos_alerts")
+}
+
+model SOSLog {
+  id         String   @id @default(cuid())
+  sosAlertId String
+  action     String   // voice_played, contact_notified, password_attempt, location_shared, etc.
+  details    String   // JSON object with action details
+  timestamp  DateTime @default(now())
+
+  // Relations
+  sosAlert   SOSAlert @relation(fields: [sosAlertId], references: [id], onDelete: Cascade)
+
+  @@map("sos_logs")
+}
+
+model EmergencyContact {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  phoneNumber String
+  email       String?
+  relationship String  // family, friend, colleague, etc.
+  priority    Int      @default(1) // 1 = highest priority
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("emergency_contacts")
 }

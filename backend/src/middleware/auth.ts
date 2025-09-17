@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { AuthService } from '@/services/authService';
-import { sendError } from '@/utils/helpers';
-import logger from '@/utils/logger';
+import { AuthService } from '../services/authService';
+import { sendError } from '../utils/helpers';
+import logger from '../utils/logger';
 
 // Extend Request interface to include user
 declare global {

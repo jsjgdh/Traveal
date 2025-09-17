@@ -21,9 +21,33 @@
     @apply bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
+
+  /* Ensure all inputs have proper text color */
+  input, textarea, select {
+    color: #111827 !important; /* Dark text for light backgrounds */
+  }
+
+  .dark input, .dark textarea, .dark select {
+    color: #f9fafb !important; /* Light text for dark backgrounds */
+  }
 }
 
 @layer components {
+  /* Global input text color fix */
+  input[type="text"], input[type="email"], input[type="tel"], 
+  input[type="password"], input[type="date"], input[type="time"],
+  textarea, select {
+    color: #111827 !important;
+    background-color: #ffffff;
+  }
+
+  .dark input[type="text"], .dark input[type="email"], .dark input[type="tel"],
+  .dark input[type="password"], .dark input[type="date"], .dark input[type="time"],
+  .dark textarea, .dark select {
+    color: #f9fafb !important;
+    background-color: #374151;
+  }
+
   .btn-primary {
     @apply bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 shadow-sm;
   }
@@ -109,6 +133,7 @@
     @apply border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100;
     @apply transition-all duration-200 ease-out;
     @apply focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800;
+    color: #111827 !important; /* Ensure dark text on light background */
   }
 
   .focus-ring {
@@ -310,7 +335,8 @@
   }
   
   .input-enhanced {
-    @apply bg-gray-800 border-gray-700 text-white;
+    @apply bg-gray-800 border-gray-700;
+    color: #ffffff !important; /* Ensure white text on dark background */
   }
   
   .loading-skeleton {
@@ -328,7 +354,8 @@
 }
 
 .dark .input-enhanced {
-  @apply bg-gray-800 border-gray-700 text-gray-100;
+  @apply bg-gray-800 border-gray-700;
+  color: #f9fafb !important; /* Ensure light text in dark mode */
 }
 
 .dark .loading-skeleton {

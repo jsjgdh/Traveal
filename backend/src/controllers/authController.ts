@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { AuthService } from '@/services/authService';
-import { sendSuccess, sendError, asyncHandler } from '@/utils/helpers';
-import logger from '@/utils/logger';
+import { AuthService } from '../services/authService';
+import { sendSuccess, sendError, asyncHandler } from '../utils/helpers';
+import logger from '../utils/logger';
 
 export class AuthController {
   /**

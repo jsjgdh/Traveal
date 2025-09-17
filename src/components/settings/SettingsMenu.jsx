@@ -5,8 +5,10 @@ import {
   Shield, 
   Smartphone, 
   HelpCircle,
-  Settings2
+  Settings2,
+  AlertTriangle
 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import AccountSettings from './AccountSettings'
 import DataPrivacySettings from './DataPrivacySettings'
 import AppPreferences from './AppPreferences'
@@ -14,8 +16,18 @@ import SupportSection from './SupportSection'
 
 function SettingsMenu() {
   const [activeSection, setActiveSection] = useState(null)
+  const navigate = useNavigate()
 
   const settingsSections = [
+    {
+      id: 'sos',
+      title: 'SOS Safety',
+      description: 'Emergency alerts, Route monitoring, Safety settings',
+      icon: AlertTriangle,
+      color: 'bg-red-500',
+      external: true,
+      path: '/sos/settings'
+    },
     {
       id: 'account',
       title: 'Account',
@@ -83,7 +95,13 @@ function SettingsMenu() {
           return (
             <button
               key={section.id}
-              onClick={() => setActiveSection(section.id)}
+              onClick={() => {
+                if (section.external) {
+                  navigate(section.path)
+                } else {
+                  setActiveSection(section.id)
+                }
+              }}
               className="w-full card hover:shadow-lg transition-all duration-200 flex items-center space-x-4 p-4"
             >
               <div className={`w-12 h-12 ${section.color} rounded-xl flex items-center justify-center`}>

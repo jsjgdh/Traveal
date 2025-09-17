@@ -1,8 +1,8 @@
-import { prisma } from '@/config/database';
-import { config } from '@/config/environment';
-import { AnonymizedTripData } from '@/types';
-import { fuzzyLocation, roundTime, calculateDistance } from '@/utils/helpers';
-import logger from '@/utils/logger';
+import { prisma } from '../config/database';
+import { config } from '../config/environment';
+import { AnonymizedTripData } from '../types';
+import { fuzzyLocation, roundTime, calculateDistance } from '../utils/helpers';
+import logger from '../utils/logger';
 import crypto from 'crypto';
 // @ts-ignore - node-cron types not available
 import cron from 'node-cron';

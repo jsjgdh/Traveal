@@ -9,7 +9,8 @@ function Layout({ children }) {
                        location.pathname.startsWith('/data') || 
                        location.pathname.startsWith('/rewards') || 
                        location.pathname.startsWith('/profile') || 
-                       location.pathname.startsWith('/settings')
+                       location.pathname.startsWith('/settings') ||
+                       location.pathname.startsWith('/sos')
 
   const showHeader = !showBottomNav // Hide header on dashboard pages since they have their own
 

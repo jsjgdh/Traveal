@@ -1,4 +1,4 @@
-import { Bell, Settings, MapPin, Battery, Target, Car, Bus, Footprints, Plus, History, Gift, Share2, Compass, Utensils, Star } from 'lucide-react'
+import { Bell, Settings, MapPin, Battery, Target, Car, Bus, Footprints, Plus, History, Gift, Share2, Compass, Utensils, Star, AlertTriangle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useNotifications, SystemStatusMonitor } from '../components/notifications'
 
@@ -12,10 +12,10 @@ function Dashboard() {
   ]
 
   const quickActions = [
-    { id: 1, title: 'Manual Trip', icon: Plus, color: 'bg-primary-500', action: () => navigate('/trip-demo') },
-    { id: 2, title: 'Discover Gems', icon: Compass, color: 'bg-green-500', action: () => navigate('/discover') },
-    { id: 3, title: 'Rewards Center', icon: Gift, color: 'bg-purple-500', action: () => navigate('/rewards') },
-    { id: 4, title: 'Share Data', icon: Share2, color: 'bg-orange-500', action: () => console.log('Share Data') }
+    { id: 1, title: 'SOS Safety', icon: AlertTriangle, color: 'bg-red-500', action: () => navigate('/sos') },
+    { id: 2, title: 'Manual Trip', icon: Plus, color: 'bg-primary-500', action: () => navigate('/trip-demo') },
+    { id: 3, title: 'Discover Gems', icon: Compass, color: 'bg-green-500', action: () => navigate('/discover') },
+    { id: 4, title: 'Rewards Center', icon: Gift, color: 'bg-purple-500', action: () => navigate('/rewards') }
   ]
 
   return (
@@ -43,7 +43,10 @@ function Dashboard() {
                 <Bell size={22} />
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
               </button>
-              <button className="p-2 text-gray-600 hover:text-primary-600 transition-colors">
+              <button 
+                onClick={() => navigate('/settings')}
+                className="p-2 text-gray-600 hover:text-primary-600 transition-colors"
+              >
                 <Settings size={22} />
               </button>
             </div>

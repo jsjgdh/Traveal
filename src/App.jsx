@@ -28,6 +28,12 @@ import NotificationDemo from './pages/NotificationDemo'
 import { OnboardingFlow } from './components/onboarding'
 import { NotificationProvider, NotificationBanner, NotificationPermissionFlow } from './components/notifications'
 
+// SOS Safety Components
+import SOSManager from './components/sos/SOSManager'
+import SOSSettings from './components/sos/SOSSettings'
+import VoiceAlertTest from './components/sos/VoiceAlertTest'
+import PermissionRequestFlow from './components/sos/PermissionRequestFlow'
+
 // Theme Context
 import { ThemeProvider } from './contexts/ThemeContext'
 
@@ -144,6 +150,12 @@ function App() {
                             <Route path="/rewards" element={<ProtectedRoute><RouteWrapper title="Rewards"><RewardsPage /></RouteWrapper></ProtectedRoute>} />
                             <Route path="/profile" element={<ProtectedRoute><RouteWrapper title="Profile"><ProfilePage /></RouteWrapper></ProtectedRoute>} />
                             <Route path="/settings" element={<ProtectedRoute><RouteWrapper title="Settings"><SettingsPage /></RouteWrapper></ProtectedRoute>} />
+                            
+                            {/* SOS Safety routes */}
+                            <Route path="/sos" element={<ProtectedRoute><RouteWrapper title="SOS Safety"><SOSManager /></RouteWrapper></ProtectedRoute>} />
+                            <Route path="/sos/settings" element={<ProtectedRoute><RouteWrapper title="SOS Settings"><SOSSettings /></RouteWrapper></ProtectedRoute>} />
+                            <Route path="/sos/test" element={<ProtectedRoute><RouteWrapper title="Voice Alert Test"><VoiceAlertTest /></RouteWrapper></ProtectedRoute>} />
+                            <Route path="/sos/permissions" element={<ProtectedRoute><RouteWrapper title="SOS Permissions"><PermissionRequestFlow /></RouteWrapper></ProtectedRoute>} />
                             
                             {/* Demo routes */}
                             <Route path="/trip-validation-demo" element={<RouteWrapper title="Trip Validation Demo"><TripValidationDemo /></RouteWrapper>} />

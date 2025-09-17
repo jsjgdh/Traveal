@@ -14,6 +14,7 @@ import authRoutes from './routes/auth.js';
 import tripRoutes from './routes/trips.js';
 import notificationRoutes from './routes/notifications.js';
 import analyticsRoutes from './routes/analytics.js';
+import sosRoutes from './routes/sos.js';
 
 const app = express();
 
@@ -107,6 +108,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/trips', tripRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
 app.use('/api/v1/analytics', analyticsRoutes);
+app.use('/api/v1/sos', sosRoutes);
 
 // API documentation redirect
 app.get('/docs', (_req: Request, res: Response) => {
@@ -183,6 +185,8 @@ app.use((error: any, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 // Graceful shutdown handler
+let server: any;
+
 const gracefulShutdown = (signal: string) => {
   logger.info(`${signal} received. Starting graceful shutdown...`);
   
@@ -220,7 +224,7 @@ const startServer = async () => {
     AnonymizationService.initialize();
 
     // Start HTTP server
-    const server = app.listen(config.PORT, () => {
+    server = app.listen(config.PORT, () => {
       logger.info(`🚀 Server running on port ${config.PORT}`);
       logger.info(`📝 Environment: ${config.NODE_ENV}`);
       logger.info(`🏥 Health check: http://localhost:${config.PORT}/health`);
@@ -239,7 +243,7 @@ const startServer = async () => {
 };
 
 // Export for testing
-export { app };
+export { app, server };
 
 // Start server if not in test environment
 if (import.meta.url === `file://${process.argv[1]}`) {
@@ -257,6 +261,3 @@ process.on('uncaughtException', (error: Error) => {
   logger.error('Uncaught Exception:', error);
   process.exit(1);
 });
-
-let server: any;
-export { server };

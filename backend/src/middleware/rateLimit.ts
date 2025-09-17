@@ -1,8 +1,8 @@
 import rateLimit from 'express-rate-limit';
 import { Request, Response } from 'express';
-import { config } from '@/config/environment';
-import { sendError } from '@/utils/helpers';
-import logger from '@/utils/logger';
+import { config } from '../config/environment';
+import { sendError } from '../utils/helpers';
+import logger from '../utils/logger';
 
 /**
  * General API rate limiter

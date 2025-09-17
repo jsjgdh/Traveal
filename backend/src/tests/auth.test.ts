@@ -1,14 +1,39 @@
 import { describe, test, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import request from 'supertest';
 import express from 'express';
-import { AuthService } from '../services/authService.js';
-import { AuthController } from '../controllers/authController.js';
-import authRoutes from '../routes/auth.js';
+import { AuthService } from '../services/authService';
+import { AuthController } from '../controllers/authController';
+import authRoutes from '../routes/auth';
 
 // Mock dependencies
-jest.mock('../services/authService.js');
-jest.mock('../config/database.js');
-jest.mock('../utils/logger.js');
+jest.mock('../services/authService');
+jest.mock('../config/database');
+jest.mock('../utils/logger');
+jest.mock('../middleware/auth');
+jest.mock('../middleware/validation');
+jest.mock('../middleware/rateLimit');
+
+// Mock middleware to avoid dependency issues
+jest.mock('../middleware/auth', () => ({
+  authenticate: (req: any, res: any, next: any) => next(),
+  validateDeviceId: (req: any, res: any, next: any) => next(),
+  optionalAuth: (req: any, res: any, next: any) => next()
+}));
+
+jest.mock('../middleware/validation', () => ({
+  validate: () => (req: any, res: any, next: any) => next(),
+  schemas: {
+    registerUser: {},
+    refreshToken: {},
+    updateConsent: {},
+    updatePreferences: {}
+  }
+}));
+
+jest.mock('../middleware/rateLimit', () => ({
+  authLimiter: (req: any, res: any, next: any) => next(),
+  generalLimiter: (req: any, res: any, next: any) => next()
+}));
 
 const app = express();
 app.use(express.json());
@@ -28,12 +53,18 @@ describe('Authentication System', () => {
           deviceId: 'device123',
           onboarded: true,
           consentData: {
-            dataCollection: true,
-            dataSharing: false,
-            locationTracking: true,
-            analytics: true,
-            notifications: true,
-            timestamp: new Date()
+            locationData: {
+              allowTracking: true,
+              preciseLocation: true
+            },
+            sensorData: {
+              motionSensors: true,
+              activityDetection: true
+            },
+            usageAnalytics: {
+              anonymousStats: true,
+              crashReports: true
+            }
           }
         };
 
@@ -57,12 +88,18 @@ describe('Authentication System', () => {
           .mockResolvedValue(null);
 
         const result = await AuthService.registerUser('device123', {
-          dataCollection: true,
-          dataSharing: false,
-          locationTracking: true,
-          analytics: true,
-          notifications: true,
-          timestamp: new Date()
+          locationData: {
+            allowTracking: true,
+            preciseLocation: true
+          },
+          sensorData: {
+            motionSensors: true,
+            activityDetection: true
+          },
+          usageAnalytics: {
+            anonymousStats: true,
+            crashReports: true
+          }
         });
 
         expect(result).toBeNull();
@@ -164,12 +201,18 @@ describe('Authentication System', () => {
           .set('X-Device-ID', 'device123')
           .send({
             consentData: {
-              dataCollection: true,
-              dataSharing: false,
-              locationTracking: true,
-              analytics: true,
-              notifications: true,
-              timestamp: new Date().toISOString()
+              locationData: {
+                allowTracking: true,
+                preciseLocation: true
+              },
+              sensorData: {
+                motionSensors: true,
+                activityDetection: true
+              },
+              usageAnalytics: {
+                anonymousStats: true,
+                crashReports: true
+              }
             }
           });
 
@@ -184,12 +227,18 @@ describe('Authentication System', () => {
           .post('/api/v1/auth/register')
           .send({
             consentData: {
-              dataCollection: true,
-              dataSharing: false,
-              locationTracking: true,
-              analytics: true,
-              notifications: true,
-              timestamp: new Date().toISOString()
+              locationData: {
+                allowTracking: true,
+                preciseLocation: true
+              },
+              sensorData: {
+                motionSensors: true,
+                activityDetection: true
+              },
+              usageAnalytics: {
+                anonymousStats: true,
+                crashReports: true
+              }
             }
           });
 
@@ -203,8 +252,12 @@ describe('Authentication System', () => {
           .set('X-Device-ID', 'device123')
           .send({
             consentData: {
-              // Missing required fields
-              dataCollection: true
+              // Missing required fields - should be invalid
+              locationData: {
+                allowTracking: true
+                // Missing preciseLocation
+              }
+              // Missing sensorData and usageAnalytics
             }
           });
 

@@ -1,9 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
-import { prisma } from '@/config/database';
-import { config } from '@/config/environment';
-import { ConsentData, UserPreferences, AuthTokens } from '@/types';
-import logger from '@/utils/logger';
+import { prisma } from '../config/database';
+import { config } from '../config/environment';
+import { ConsentData, UserPreferences, AuthTokens } from '../types';
+import logger from '../utils/logger';
 
 export class AuthService {
   /**

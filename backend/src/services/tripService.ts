@@ -1,8 +1,8 @@
-import { prisma } from '@/config/database';
-import { config } from '@/config/environment';
-import { TripData, LocationPoint } from '@/types';
-import { calculateDistance } from '@/utils/helpers';
-import logger from '@/utils/logger';
+import { prisma } from '../config/database';
+import { config } from '../config/environment';
+import { TripData, LocationPoint } from '../types';
+import { calculateDistance } from '../utils/helpers';
+import logger from '../utils/logger';
 
 export class TripService {
   /**
