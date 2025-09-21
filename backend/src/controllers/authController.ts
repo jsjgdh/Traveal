@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../services/authService';
+import { DataExportService } from '../services/dataExportService';
 import { sendSuccess, sendError, asyncHandler } from '../utils/helpers';
 import logger from '../utils/logger';
 
@@ -173,5 +174,101 @@ export class AuthController {
       authenticated: !!user,
       user: user || null
     }, 'Status retrieved successfully');
+  });
+
+  /**
+   * Request data export
+   * POST /api/v1/auth/export-data
+   */
+  static requestDataExport = asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user!.id;
+    const { 
+      selectedDataTypes, 
+      exportFormat, 
+      dateRange, 
+      customDateStart, 
+      customDateEnd,
+      deliveryMethod 
+    } = req.body;
+
+    const exportRequest = await DataExportService.createExportRequest(userId, {
+      selectedDataTypes,
+      exportFormat,
+      dateRange,
+      customDateStart,
+      customDateEnd,
+      deliveryMethod
+    });
+
+    if (!exportRequest) {
+      return sendError(res, 'Failed to create export request', 500);
+    }
+
+    logger.info(`Data export requested by user: ${userId}`);
+
+    return sendSuccess(res, {
+      exportRequest
+    }, 'Data export request created successfully', 201);
+  });
+
+  /**
+   * Get user's export requests
+   * GET /api/v1/auth/export-requests
+   */
+  static getExportRequests = asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user!.id;
+
+    const requests = await DataExportService.getUserExportRequests(userId);
+
+    return sendSuccess(res, {
+      requests
+    }, 'Export requests retrieved successfully');
+  });
+
+  /**
+   * Download exported data
+   * GET /api/v1/auth/export/:requestId/download
+   */
+  static downloadExportedData = asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user!.id;
+    const { requestId } = req.params;
+
+    const exportData = await DataExportService.getExportedData(userId, requestId);
+
+    if (!exportData) {
+      return sendError(res, 'Export not found or not ready', 404);
+    }
+
+    // Set appropriate headers for download
+    res.setHeader('Content-Type', exportData.contentType);
+    res.setHeader('Content-Disposition', `attachment; filename="${exportData.filename}"`);
+    
+    logger.info(`Data export downloaded by user: ${userId}, request: ${requestId}`);
+
+    return res.send(exportData.data);
+  });
+
+  /**
+   * Update user profile
+   * PUT /api/v1/auth/profile
+   */
+  static updateProfile = asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.user!.id;
+    const { profileData } = req.body;
+
+    const success = await AuthService.updateProfile(userId, profileData);
+    
+    if (!success) {
+      return sendError(res, 'Failed to update profile', 500);
+    }
+
+    // Get updated user data
+    const updatedUser = await AuthService.getUserByUuid(req.user!.uuid);
+
+    logger.info(`Profile updated for user: ${userId}`);
+
+    return sendSuccess(res, {
+      user: updatedUser
+    }, 'Profile updated successfully');
   });
 }

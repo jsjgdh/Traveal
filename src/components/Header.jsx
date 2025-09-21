@@ -10,6 +10,24 @@ function Header() {
   const { unreadCount } = useNotifications()
   const [showNotificationCenter, setShowNotificationCenter] = useState(false)
 
+  // Get page title from pathname
+  const getPageTitle = () => {
+    const path = location.pathname
+    if (path === '/dashboard') return 'Dashboard'
+    if (path === '/discover') return 'Discover Gems'
+    if (path === '/trip') return 'Trip Management'
+    if (path === '/trip-planner') return 'Trip Planner'
+    if (path === '/data') return 'Data Analytics'
+    if (path === '/rewards') return 'Rewards'
+    if (path === '/profile') return 'Profile'
+    if (path === '/settings') return 'Settings'
+    if (path === '/sos') return 'SOS Safety'
+    if (path === '/sos/settings') return 'SOS Settings'
+    if (path === '/sos/test') return 'Voice Alert Test'
+    if (path === '/sos/permissions') return 'SOS Permissions'
+    return 'NATPAC'
+  }
+
   return (
     <header className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 sticky top-0 z-50 transition-colors duration-300">
       <div className="px-4 py-3">
@@ -22,8 +40,12 @@ function Header() {
               </svg>
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">NATPAC</h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Travel Data Collection</p>
+              <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100 fluid-text-base">
+                {getPageTitle()}
+              </h1>
+              <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
+                Travel Data Collection
+              </p>
             </div>
           </div>
           

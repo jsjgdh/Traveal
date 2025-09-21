@@ -24,11 +24,13 @@ import {
   UserProfile, 
   EnhancedAccountSettings, 
   AccountDeletionFlow, 
-  DataExportRequest 
+  DataExportRequest,
+  ConsentManagement,
+  ProfileEdit
 } from '../components/settings'
 
 function ProfilePage() {
-  const [activeView, setActiveView] = useState('main') // 'main', 'profile', 'account-settings', 'privacy', 'data-export', 'delete-account'
+  const [activeView, setActiveView] = useState('main') // 'main', 'profile', 'account-settings', 'privacy', 'data-export', 'delete-account', 'consent-management', 'profile-edit'
   const [userStats] = useState({
     tripsThisMonth: 42,
     totalDistance: '284 km',
@@ -49,6 +51,54 @@ function ProfilePage() {
         </header>
         <main className="px-4 py-6">
           <PrivacyCenter onBack={() => setActiveView('main')} isStandalone={true} />
+        </main>
+      </div>
+    )
+  }
+
+  if (activeView === 'consent-management') {
+    return (
+      <div className="min-h-screen bg-gray-50 pb-24">
+        <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
+          <div className="px-4 py-4">
+            <h1 className="text-xl font-bold text-gray-900">Consent Management</h1>
+            <p className="text-sm text-gray-600">Control how your data is collected and used</p>
+          </div>
+        </header>
+        <main className="px-4 py-6">
+          <ConsentManagement onBack={() => setActiveView('main')} />
+        </main>
+      </div>
+    )
+  }
+
+  if (activeView === 'profile-edit') {
+    return (
+      <div className="min-h-screen bg-gray-50 pb-24">
+        <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
+          <div className="px-4 py-4">
+            <h1 className="text-xl font-bold text-gray-900">Edit Profile</h1>
+            <p className="text-sm text-gray-600">Customize your app preferences</p>
+          </div>
+        </header>
+        <main className="px-4 py-6">
+          <ProfileEdit onBack={() => setActiveView('main')} />
+        </main>
+      </div>
+    )
+  }
+
+  if (activeView === 'data-export') {
+    return (
+      <div className="min-h-screen bg-gray-50 pb-24">
+        <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
+          <div className="px-4 py-4">
+            <h1 className="text-xl font-bold text-gray-900">Export Your Data</h1>
+            <p className="text-sm text-gray-600">Download a copy of your personal data</p>
+          </div>
+        </header>
+        <main className="px-4 py-6">
+          <DataExportRequest onBack={() => setActiveView('main')} />
         </main>
       </div>
     )
@@ -144,30 +194,44 @@ function ProfilePage() {
           <h3 className="text-lg font-semibold text-gray-900 px-1">Account Management</h3>
           
           <button
-            onClick={() => setActiveView('account-settings')}
+            onClick={() => setActiveView('profile-edit')}
             className="w-full card hover:shadow-lg transition-all duration-200 flex items-center space-x-3 p-4 group"
           >
             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-              <Settings size={20} className="text-blue-600" />
+              <Edit3 size={20} className="text-blue-600" />
             </div>
             <div className="flex-1 text-left">
-              <h3 className="font-medium text-gray-900 group-hover:text-blue-700 transition-colors">Account Settings</h3>
-              <p className="text-sm text-gray-600">Password, notifications, and security preferences</p>
+              <h3 className="font-medium text-gray-900 group-hover:text-blue-700 transition-colors">Edit Profile</h3>
+              <p className="text-sm text-gray-600">Customize your app preferences and settings</p>
             </div>
             <ChevronRight size={18} className="text-gray-400 group-hover:text-blue-500 transition-colors" />
           </button>
+
           <button
-            onClick={() => setActiveView('privacy')}
-            className="w-full card hover:shadow-lg transition-all duration-200 flex items-center space-x-3 p-4"
+            onClick={() => setActiveView('consent-management')}
+            className="w-full card hover:shadow-lg transition-all duration-200 flex items-center space-x-3 p-4 group"
           >
-            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-              <Shield size={20} className="text-green-600" />
+            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+              <Shield size={20} className="text-purple-600" />
             </div>
             <div className="flex-1 text-left">
-              <h3 className="font-medium text-gray-900">Privacy Center</h3>
+              <h3 className="font-medium text-gray-900 group-hover:text-purple-700 transition-colors">Manage Consent</h3>
+              <p className="text-sm text-gray-600">Control how your data is collected and used</p>
+            </div>
+            <ChevronRight size={18} className="text-gray-400 group-hover:text-purple-500 transition-colors" />
+          </button>
+          <button
+            onClick={() => setActiveView('privacy')}
+            className="w-full card hover:shadow-lg transition-all duration-200 flex items-center space-x-3 p-4 group"
+          >
+            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
+              <Lock size={20} className="text-green-600" />
+            </div>
+            <div className="flex-1 text-left">
+              <h3 className="font-medium text-gray-900 group-hover:text-green-700 transition-colors">Privacy Center</h3>
               <p className="text-sm text-gray-600">Manage data collection and sharing preferences</p>
             </div>
-            <ChevronRight size={18} className="text-gray-400" />
+            <ChevronRight size={18} className="text-gray-400 group-hover:text-green-500 transition-colors" />
           </button>
 
           <button

@@ -19,7 +19,9 @@ export const useDeviceInfo = () => {
     isDesktop: false,
     hasTouch: false,
     orientation: 'portrait',
-    screenSize: 'sm'
+    screenSize: 'sm',
+    width: 0,
+    height: 0
   })
 
   useEffect(() => {
@@ -34,7 +36,9 @@ export const useDeviceInfo = () => {
         isDesktop: width >= 1024,
         hasTouch,
         orientation: height > width ? 'portrait' : 'landscape',
-        screenSize: width < 640 ? 'sm' : width < 768 ? 'md' : width < 1024 ? 'lg' : 'xl'
+        screenSize: width < 640 ? 'sm' : width < 768 ? 'md' : width < 1024 ? 'lg' : 'xl',
+        width,
+        height
       })
     }
 
@@ -49,6 +53,72 @@ export const useDeviceInfo = () => {
   }, [])
 
   return deviceInfo
+}
+
+// Responsive Design Utilities
+export const useResponsiveDesign = () => {
+  const deviceInfo = useDeviceInfo()
+  
+  // Get responsive padding class based on screen size
+  const getResponsivePadding = () => {
+    if (deviceInfo.width < 360) return 'px-2'
+    if (deviceInfo.width < 414) return 'px-3'
+    if (deviceInfo.width < 640) return 'px-4'
+    if (deviceInfo.width < 768) return 'px-5'
+    if (deviceInfo.width < 1024) return 'px-6'
+    return 'px-8'
+  }
+  
+  // Get container max width class
+  const getContainerMaxWidth = () => {
+    if (deviceInfo.isMobile) return 'max-w-md'
+    if (deviceInfo.isTablet) return 'max-w-lg'
+    return 'max-w-2xl'
+  }
+  
+  // Get touch target size class
+  const getTouchTargetSize = () => {
+    if (deviceInfo.hasTouch) {
+      if (deviceInfo.width < 360) return 'min-h-10 min-w-10' // 40px
+      if (deviceInfo.width < 414) return 'min-h-11 min-w-11' // 44px
+      return 'min-h-12 min-w-12' // 48px
+    }
+    return 'min-h-8 min-w-8' // 32px for non-touch devices
+  }
+  
+  // Get responsive text size class
+  const getResponsiveTextSize = (baseSize) => {
+    const sizes = {
+      xs: deviceInfo.width < 360 ? 'text-xs' : deviceInfo.width < 414 ? 'text-xs' : 'text-sm',
+      sm: deviceInfo.width < 360 ? 'text-sm' : deviceInfo.width < 414 ? 'text-sm' : 'text-base',
+      base: deviceInfo.width < 360 ? 'text-base' : deviceInfo.width < 414 ? 'text-base' : 'text-lg',
+      lg: deviceInfo.width < 360 ? 'text-lg' : deviceInfo.width < 414 ? 'text-lg' : 'text-xl',
+      xl: deviceInfo.width < 360 ? 'text-xl' : deviceInfo.width < 414 ? 'text-xl' : 'text-2xl'
+    }
+    return sizes[baseSize] || sizes.base
+  }
+  
+  // Get responsive spacing class
+  const getResponsiveSpacing = (baseSpacing) => {
+    const spacing = {
+      1: deviceInfo.width < 360 ? 'space-y-1' : deviceInfo.width < 414 ? 'space-y-1.5' : 'space-y-2',
+      2: deviceInfo.width < 360 ? 'space-y-2' : deviceInfo.width < 414 ? 'space-y-2.5' : 'space-y-3',
+      3: deviceInfo.width < 360 ? 'space-y-3' : deviceInfo.width < 414 ? 'space-y-3.5' : 'space-y-4',
+      4: deviceInfo.width < 360 ? 'space-y-4' : deviceInfo.width < 414 ? 'space-y-5' : 'space-y-6',
+      5: deviceInfo.width < 360 ? 'space-y-5' : deviceInfo.width < 414 ? 'space-y-6' : 'space-y-7',
+      6: deviceInfo.width < 360 ? 'space-y-6' : deviceInfo.width < 414 ? 'space-y-7' : 'space-y-8'
+    }
+    return spacing[baseSpacing] || spacing[3]
+  }
+
+  return {
+    deviceInfo,
+    getResponsivePadding,
+    getContainerMaxWidth,
+    getTouchTargetSize,
+    getResponsiveTextSize,
+    getResponsiveSpacing
+  }
 }
 
 // Haptic Feedback

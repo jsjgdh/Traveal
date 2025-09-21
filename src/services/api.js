@@ -166,6 +166,65 @@ class ApiService {
     }
   }
 
+  async updateProfile(profileData) {
+    try {
+      const response = await this.request('/auth/profile', {
+        method: 'PUT',
+        body: JSON.stringify({ profileData })
+      });
+
+      return response.success ? response.data.user : null;
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      return null;
+    }
+  }
+
+  async requestDataExport(exportOptions) {
+    try {
+      const response = await this.request('/auth/export-data', {
+        method: 'POST',
+        body: JSON.stringify(exportOptions)
+      });
+
+      return response.success ? response.data : null;
+    } catch (error) {
+      console.error('Failed to request data export:', error);
+      return null;
+    }
+  }
+
+  async getExportRequests() {
+    try {
+      const response = await this.request('/auth/export-requests');
+      return response.success ? response.data : null;
+    } catch (error) {
+      console.error('Failed to get export requests:', error);
+      return null;
+    }
+  }
+
+  async downloadExport(requestId) {
+    try {
+      const response = await fetch(`${this.baseURL}/auth/export/${requestId}/download`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${this.authToken}`,
+          'X-Device-ID': this.getDeviceId()
+        }
+      });
+
+      if (response.ok) {
+        return response.blob();
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Failed to download export:', error);
+      return null;
+    }
+  }
+
   async deleteAccount() {
     try {
       const response = await this.request('/auth/account', {

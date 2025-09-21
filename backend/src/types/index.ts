@@ -215,3 +215,214 @@ export interface RouteDeviationCheck {
   deviationDistance?: number;
   suggestedAction: 'continue' | 'grace_period' | 'trigger_alert';
 }
+
+// Trip Planner Feature Types
+export interface TripPlan {
+  id?: string;
+  userId: string;
+  title: string;
+  description?: string;
+  startDate: Date;
+  endDate: Date;
+  destinations: TripDestination[];
+  itinerary: ItineraryItem[];
+  companions: TripCompanion[];
+  contacts: EmergencyContact[];
+  bookingOrganizer: BookingItem[];
+  notes: string;
+  packingList: PackingItem[];
+  isShared: boolean;
+  shareToken?: string;
+  sharePermissions: SharePermission[];
+  status: 'draft' | 'planned' | 'active' | 'completed' | 'cancelled';
+  totalBudget?: number;
+  actualSpent?: number;
+  currency?: string;
+  offlineData?: OfflineItineraryData;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface TripDestination {
+  id?: string;
+  tripPlanId: string;
+  name: string;
+  location: {
+    latitude: number;
+    longitude: number;
+    address: string;
+    city: string;
+    country: string;
+  };
+  arrivalDate: Date;
+  departureDate: Date;
+  accommodation?: {
+    name: string;
+    address: string;
+    checkIn: Date;
+    checkOut: Date;
+    bookingReference?: string;
+  };
+  order: number;
+  notes?: string;
+  isFromHiddenGems?: boolean;
+  hiddenGemId?: string;
+}
+
+export interface ItineraryItem {
+  id?: string;
+  tripPlanId: string;
+  destinationId?: string;
+  date: Date;
+  startTime?: Date;
+  endTime?: Date;
+  title: string;
+  description?: string;
+  type: 'accommodation' | 'activity' | 'transportation' | 'meal' | 'meeting' | 'other';
+  location?: {
+    latitude: number;
+    longitude: number;
+    address: string;
+    name?: string;
+  };
+  cost?: number;
+  currency?: string;
+  bookingReference?: string;
+  confirmationNumber?: string;
+  notes?: string;
+  reminders: ReminderSettings[];
+  isFromHiddenGems?: boolean;
+  hiddenGemId?: string;
+  order: number;
+}
+
+export interface TripCompanion {
+  id?: string;
+  tripPlanId: string;
+  name: string;
+  email?: string;
+  phoneNumber?: string;
+  role: 'organizer' | 'participant' | 'emergency_contact';
+  permissions: 'view' | 'edit' | 'admin';
+  inviteStatus: 'pending' | 'accepted' | 'declined';
+  inviteToken?: string;
+  joinedAt?: Date;
+}
+
+export interface BookingItem {
+  id?: string;
+  tripPlanId: string;
+  type: 'flight' | 'hotel' | 'train' | 'bus' | 'car_rental' | 'activity' | 'other';
+  title: string;
+  bookingReference: string;
+  confirmationNumber?: string;
+  provider: string;
+  cost?: number;
+  currency?: string;
+  bookingDate: Date;
+  travelDate: Date;
+  status: 'confirmed' | 'pending' | 'cancelled';
+  receipts: ReceiptFile[];
+  notes?: string;
+  details: Record<string, any>;
+}
+
+export interface ReceiptFile {
+  id?: string;
+  bookingItemId: string;
+  fileName: string;
+  fileUrl: string;
+  fileSize: number;
+  mimeType: string;
+  uploadedAt: Date;
+}
+
+export interface PackingItem {
+  id?: string;
+  tripPlanId: string;
+  category: 'clothing' | 'electronics' | 'documents' | 'toiletries' | 'medications' | 'other';
+  item: string;
+  quantity: number;
+  isPacked: boolean;
+  priority: 'low' | 'medium' | 'high';
+  notes?: string;
+  packedAt?: Date;
+}
+
+export interface ReminderSettings {
+  id?: string;
+  itineraryItemId: string;
+  type: 'departure' | 'check_in' | 'reservation' | 'activity' | 'custom';
+  timeBeforeEvent: number; // minutes
+  isActive: boolean;
+  notificationSent?: boolean;
+  customMessage?: string;
+}
+
+export interface SharePermission {
+  id?: string;
+  tripPlanId: string;
+  userId?: string;
+  email?: string;
+  phoneNumber?: string;
+  permissions: 'view' | 'edit' | 'admin';
+  inviteStatus: 'pending' | 'accepted' | 'declined';
+  inviteToken?: string;
+  sharedAt: Date;
+  acceptedAt?: Date;
+}
+
+export interface OfflineItineraryData {
+  id?: string;
+  tripPlanId: string;
+  data: Record<string, any>;
+  lastSyncAt: Date;
+  version: number;
+  mapData?: {
+    routes: any[];
+    markers: any[];
+    bounds: any;
+  };
+}
+
+export interface PlaceSearchResult {
+  placeId: string;
+  name: string;
+  type: 'hotel' | 'restaurant' | 'attraction' | 'transport' | 'other';
+  location: {
+    latitude: number;
+    longitude: number;
+    address: string;
+  };
+  rating?: number;
+  priceLevel?: number;
+  photos?: string[];
+  reviews?: PlaceReview[];
+  contact?: {
+    phone?: string;
+    website?: string;
+    email?: string;
+  };
+  openingHours?: any;
+  isFromHiddenGems?: boolean;
+  hiddenGemId?: string;
+}
+
+export interface PlaceReview {
+  author: string;
+  rating: number;
+  text: string;
+  date: Date;
+}
+
+export interface TripExportOptions {
+  format: 'pdf' | 'image' | 'json' | 'ical';
+  includeMap: boolean;
+  includeBookings: boolean;
+  includePackingList: boolean;
+  includeNotes: boolean;
+  dateRange?: {
+    start: Date;
+    end: Date;
+  };
+}

@@ -290,3 +290,23 @@ export const paramSchemas = {
     uuid: Joi.string().uuid().required()
   })
 };
+
+// Trip Planner validation schemas (temporary addition)
+export const tripPlannerSchemas = {
+  createTripPlan: Joi.object({
+    title: Joi.string().min(1).max(200).required(),
+    description: Joi.string().max(1000).optional(),
+    startDate: Joi.date().required(),
+    endDate: Joi.date().min(Joi.ref('startDate')).required(),
+    destinations: Joi.array().items(
+      Joi.object({
+        name: Joi.string().required(),
+        city: Joi.string().optional(),
+        country: Joi.string().optional()
+      })
+    ).optional(),
+    totalBudget: Joi.number().min(0).optional(),
+    currency: Joi.string().length(3).optional(),
+    notes: Joi.string().max(2000).optional()
+  })
+};

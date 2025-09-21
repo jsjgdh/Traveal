@@ -122,7 +122,31 @@ DATABASE_URL="file:./dev.db"
 JWT_SECRET="your-super-secret-jwt-key"
 JWT_REFRESH_SECRET="your-super-secret-refresh-key"
 CORS_ORIGIN="http://localhost:5173"
+
+# 🗺️ MAPS API CONFIGURATION (IMPORTANT!)
+# For route monitoring and safety features, configure maps API keys:
+# See MAPS_API_CONFIGURATION.md for detailed setup instructions
+
+# Google Maps API Key (get from https://console.cloud.google.com/)
+GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
+
+# MapMyIndia API Key (get from https://www.mapmyindia.com/api/)
+MAPMYINDIA_API_KEY=your_mapmyindia_api_key_here
+MAPMYINDIA_CLIENT_ID=your_mapmyindia_client_id_here
+
+# Map provider settings
+DEFAULT_MAP_PROVIDER=google
+MAP_GEOCODING_ENABLED=true
+MAP_ROUTING_ENABLED=true
+
+# 🚨 SOS & SAFETY FEATURES
+# Emergency notification settings (for route deviation detection)
+SMS_SERVICE_API_KEY=your_twilio_api_key_here
+EMAIL_SERVICE_API_KEY=your_sendgrid_api_key_here
+EMERGENCY_PHONE_NUMBERS_DEFAULT=911
 ```
+
+> 📋 **Maps API Setup Required**: For maps functionality and SOS route monitoring, you need to configure Google Maps and/or MapMyIndia API keys. See [`MAPS_API_CONFIGURATION.md`](./MAPS_API_CONFIGURATION.md) for detailed API setup instructions and [`SOS_ROUTE_MONITORING.md`](./SOS_ROUTE_MONITORING.md) for safety feature configuration.
 
 #### Frontend Environment
 ```bash
@@ -242,6 +266,25 @@ val locationBridge = LocationBridge(reactContext)
 - `PUT /api/v1/trips/:id` - Update trip details
 - `POST /api/v1/trips/:id/locations` - Add location point
 
+### Maps & Location Services
+- `GET /api/v1/maps/provider` - Get current map provider
+- `POST /api/v1/maps/provider` - Set map provider (Google/MapMyIndia)
+- `GET /api/v1/maps/geocode` - Convert address to coordinates
+- `GET /api/v1/maps/reverse-geocode` - Convert coordinates to address
+- `GET /api/v1/maps/autocomplete` - Get place suggestions
+- `POST /api/v1/maps/route` - Calculate routes between points
+- `POST /api/v1/maps/static-map` - Generate static map images
+
+### 🚨 SOS & Safety Features
+- `POST /api/v1/sos/profile` - Create/update SOS emergency profile
+- `GET /api/v1/sos/profile` - Get SOS profile settings
+- `POST /api/v1/sos/monitoring/start` - Start route monitoring for trip
+- `POST /api/v1/sos/monitoring/update-location` - Update location and check deviation
+- `POST /api/v1/sos/monitoring/end/:id` - End route monitoring
+- `POST /api/v1/sos/alert/trigger` - Trigger emergency alert
+- `POST /api/v1/sos/alert/verify-password` - Verify emergency password
+- `GET /api/v1/sos/alerts/active` - Get active emergency alerts
+
 ## 🔥 Key Features
 
 ### 🎨 User Experience
@@ -250,6 +293,7 @@ val locationBridge = LocationBridge(reactContext)
 - **⚡ Progressive Web App**: Install on any device, works offline
 - **✨ Smooth Animations**: 60fps micro-interactions and transitions
 - **♿ Accessibility**: WCAG 2.1 AA compliant with screen reader support
+- **📱 Responsive Design**: Automatically adjusts to any screen size
 
 ### 🔐 Privacy & Security
 - **🆔 Anonymous by Design**: No personal data collection, anonymous UUIDs only
@@ -266,6 +310,21 @@ val locationBridge = LocationBridge(reactContext)
 - **🔍 Trip Validation**: Government compliance verification
 - **📈 Analytics**: Personal trip statistics and insights
 
+### 🗺️ Maps & Route Management
+- **🌍 Dual Provider Support**: Google Maps and MapMyIndia integration
+- **🗺️ Route Calculation**: Real-time route optimization and planning
+- **📍 Geocoding Services**: Address-to-coordinates conversion
+- **🔍 Place Search**: Autocomplete suggestions and place details
+- **🗺️ Static Maps**: Generate map images with markers and routes
+
+### 🚨 SOS & Safety Features
+- **🔴 Emergency Alerts**: Instant emergency contact notification system
+- **🗺️ Route Deviation Detection**: Real-time monitoring for safety
+- **📱 Multi-Channel Notifications**: SMS, Email, and Push notifications
+- **🔒 Stealth Mode**: Discreet emergency alerts with partial passwords
+- **🔄 Grace Period**: Smart false-alarm prevention system
+- **📡 Live Location Sharing**: Real-time location updates during emergencies
+
 ### 🏆 Gamification
 - **🎆 Achievement System**: Unlockable badges for milestones
 - **📊 Weekly Challenges**: Engaging tasks to encourage participation
@@ -277,6 +336,42 @@ val locationBridge = LocationBridge(reactContext)
 - **📱 Push Notifications**: Background updates with user permission
 - **🎉 Achievement Alerts**: Celebratory notifications for milestones
 - **📶 System Status**: Network connectivity and sync indicators
+
+## 📱 Responsive Design Features
+
+### 📏 Adaptive Layout System
+- **Fluid Containers**: Dynamically adjusts container width based on screen size
+- **Flexible Grids**: CSS Grid and Flexbox layouts that adapt to any viewport
+- **Breakpoint Optimization**: Custom breakpoints for all device categories:
+  - Small phones (320px - 359px)
+  - Medium phones (360px - 413px)
+  - Large phones (414px - 639px)
+  - Tablets (640px - 1023px)
+  - Desktops (1024px+)
+
+### 🖼️ Dynamic Sizing
+- **Fluid Typography**: Font sizes that scale proportionally with viewport width
+- **Responsive Spacing**: Padding, margin, and gap utilities that adapt to screen size
+- **Touch Target Optimization**: Minimum 44px touch targets on mobile devices
+- **Safe Area Support**: Proper handling of notches and home indicators on modern devices
+
+### 🎨 Visual Consistency
+- **Consistent Components**: All UI components automatically adjust to screen size
+- **Dynamic Shadows**: Depth effects that adapt to device capabilities
+- **Color Scheme Adaptation**: Automatic light/dark mode based on system preferences
+- **High DPI Support**: Crisp visuals on retina and high-resolution displays
+
+### 🧭 Navigation Adaptation
+- **Adaptive Bottom Navigation**: Mobile-friendly bottom navigation that disappears on larger screens
+- **Contextual Header**: Page titles in header on mobile, persistent navigation on desktop
+- **Swipe Gestures**: Touch-friendly navigation for mobile users
+- **Keyboard Navigation**: Full keyboard support for accessibility
+
+### 📊 Performance Optimization
+- **Conditional Rendering**: Components only render what's needed for the current screen size
+- **Lazy Loading**: Non-critical assets loaded only when needed
+- **Memory Management**: Efficient resource usage across all device types
+- **Battery Optimization**: Reduced animations and effects on battery-constrained devices
 
 ## 🛡 Privacy & Security Features
 
@@ -316,7 +411,7 @@ npm test                   # Run frontend tests
 npm run test:e2e          # End-to-end tests
 ```
 
-## 📦 Production Deployment
+## 🚀 Production Deployment
 
 ## 🚀 Production Deployment
 
@@ -497,6 +592,8 @@ When contributing, update relevant documentation:
 - 🔒 **[Security Guide](./docs/PRIVACY.md)**: Privacy and security details
 - ⚙️ **[Deployment](./docs/DEPLOYMENT.md)**: Setup and deployment guide
 - 🧪 **[Testing](./docs/TESTING.md)**: Testing strategies and examples
+- 🗺️ **[Maps API Setup](./MAPS_API_CONFIGURATION.md)**: Maps API configuration guide
+- 🚨 **[SOS & Route Monitoring](./SOS_ROUTE_MONITORING.md)**: Safety features and route deviation detection
 
 ### 🌐 Live Resources
 - **Demo App**: https://traveal-demo.natpac.gov.in

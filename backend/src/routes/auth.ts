@@ -51,6 +51,26 @@ router.put('/preferences',
   AuthController.updatePreferences
 );
 
+router.put('/profile',
+  authenticate,
+  AuthController.updateProfile
+);
+
+router.post('/export-data',
+  authenticate,
+  AuthController.requestDataExport
+);
+
+router.get('/export-requests',
+  authenticate,
+  AuthController.getExportRequests
+);
+
+router.get('/export/:requestId/download',
+  authenticate,
+  AuthController.downloadExportedData
+);
+
 router.delete('/account',
   authenticate,
   authLimiter,

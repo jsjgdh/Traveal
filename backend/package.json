@@ -10,6 +10,7 @@
     "start": "node dist/app.js",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:notifications": "tsx src/tests/notificationTests.ts --run-tests",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "db:generate": "prisma generate",
@@ -41,7 +42,10 @@
     "dotenv": "^16.3.1",
     "uuid": "^9.0.0",
     "geolib": "^3.3.4",
-    "axios": "^1.5.0"
+    "axios": "^1.5.0",
+    "twilio": "^4.19.0",
+    "@sendgrid/mail": "^7.7.0",
+    "firebase-admin": "^11.11.0"
   },
   "devDependencies": {
     "@types/node": "^20.6.2",

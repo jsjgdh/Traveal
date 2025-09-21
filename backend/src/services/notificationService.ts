@@ -217,6 +217,56 @@ export class NotificationService {
       // Mock push notification sending
       logger.info(`Push notification sent to user ${userId}: ${notification.title}`);
       
+      // Get user's FCM token from user preferences/database
+      const userPushToken = await this.getUserPushToken(userId);
+      if (!userPushToken) {
+        logger.debug(`No push token found for user ${userId}`);
+        return;
+      }
+
+      // Create FCM message
+      const message = {
+        notification: {
+          title: notification.title,
+          body: notification.message,
+        },
+        data: {
+          notificationId: notification.id,
+          type: notification.type,
+          priority: notification.priority,
+          ...(notification.data ? { customData: JSON.stringify(notification.data) } : {})
+        },
+        token: userPushToken,
+        android: {
+          priority: this.mapPriorityToAndroid(notification.priority),
+          notification: {
+            channel_id: this.getChannelId(notification.type),
+            sound: notification.priority === 'urgent' ? 'emergency_alert' : 'default'
+          }
+        },
+        apns: {
+          payload: {
+            aps: {
+              alert: {
+                title: notification.title,
+                body: notification.message
+              },
+              sound: notification.priority === 'urgent' ? 'emergency.caf' : 'default',
+              'content-available': 1
+            }
+          }
+        }
+      };
+
+      // Send via Firebase Admin SDK (mock implementation)
+      const result = await this.sendViaFirebase(message);
+      
+      if (result.success) {
+        logger.info(`Push notification sent successfully to user ${userId}`);
+      } else {
+        logger.error(`Failed to send push notification to user ${userId}:`, result.error);
+      }
+      
       // Actual implementation would use Firebase Cloud Messaging:
       /*
       const message = {
@@ -243,23 +293,40 @@ export class NotificationService {
     notification: Notification
   ): Promise<void> {
     try {
-      // Implementation would depend on WebSocket service (Socket.IO, etc.)
-      // For now, we'll log the attempt
-      
       logger.info(`WebSocket notification sent to user ${userId}: ${notification.title}`);
       
-      // Actual implementation would use Socket.IO:
-      /*
-      const socketService = getSocketService();
-      socketService.sendToUser(userId, 'notification', {
+      // Get WebSocket connection for user
+      const socket = await this.getUserWebSocket(userId);
+      if (!socket) {
+        logger.debug(`No WebSocket connection found for user ${userId}`);
+        return;
+      }
+
+      // Send real-time notification
+      const notificationData = {
         id: notification.id,
         type: notification.type,
         title: notification.title,
         message: notification.message,
         priority: notification.priority,
-        createdAt: notification.createdAt
-      });
-      */
+        data: notification.data,
+        createdAt: notification.createdAt,
+        read: notification.read
+      };
+
+      socket.emit('notification', notificationData);
+      
+      // For emergency notifications, also trigger browser alert
+      if (notification.priority === 'urgent') {
+        socket.emit('emergency_alert', {
+          ...notificationData,
+          requiresAction: true,
+          timeout: 30000 // 30 seconds
+        });
+      }
+
+      logger.info(`WebSocket notification delivered to user ${userId}`);
+      
     } catch (error) {
       logger.error('Error sending WebSocket notification:', error);
     }
@@ -373,6 +440,36 @@ export class NotificationService {
   }
 
   /**
+   * Send trip invitation notification
+   */
+  static async sendTripInvitation(
+    email: string,
+    tripPlanId: string,
+    invitedByUserId: string
+  ): Promise<string | null> {
+    try {
+      // In production, this would send an email invitation
+      // For now, we'll create a notification for the inviting user
+      logger.info(`Trip invitation sent to ${email} for trip ${tripPlanId} by user ${invitedByUserId}`);
+      
+      return this.sendNotification(invitedByUserId, {
+        type: 'system',
+        title: 'Trip Invitation Sent',
+        message: `Invitation sent to ${email} for your trip plan`,
+        data: {
+          tripPlanId,
+          invitedEmail: email,
+          action: 'trip_invitation_sent'
+        },
+        userId: invitedByUserId
+      }, 'low');
+    } catch (error) {
+      logger.error('Error sending trip invitation:', error);
+      return null;
+    }
+  }
+
+  /**
    * Cleanup expired notifications
    */
   static async cleanupExpiredNotifications(): Promise<void> {
@@ -397,6 +494,90 @@ export class NotificationService {
     } catch (error) {
       logger.error('Error cleaning up expired notifications:', error);
     }
+  }
+
+  /**
+   * Get user's FCM push token (mock implementation)
+   */
+  private static async getUserPushToken(userId: string): Promise<string | null> {
+    // In production, this would query the user's stored FCM token
+    // For now, return a mock token for testing
+    return `fcm_token_${userId}_${Date.now()}`;
+  }
+
+  /**
+   * Map notification priority to Android priority
+   */
+  private static mapPriorityToAndroid(priority: string): string {
+    const priorityMap = {
+      'urgent': 'high',
+      'high': 'high',
+      'medium': 'normal',
+      'low': 'normal'
+    };
+    return priorityMap[priority as keyof typeof priorityMap] || 'normal';
+  }
+
+  /**
+   * Get notification channel ID for Android
+   */
+  private static getChannelId(type: string): string {
+    const channelMap = {
+      'trip_validation': 'trip_alerts',
+      'achievement': 'achievements',
+      'system': 'system_notifications',
+      'challenge': 'challenges',
+      'emergency': 'emergency_alerts',
+      'sos': 'emergency_alerts'
+    };
+    return channelMap[type as keyof typeof channelMap] || 'default';
+  }
+
+  /**
+   * Send notification via Firebase (mock implementation)
+   */
+  private static async sendViaFirebase(message: any): Promise<{ success: boolean; error?: any }> {
+    try {
+      // In production, this would use Firebase Admin SDK:
+      // const admin = require('firebase-admin');
+      // const result = await admin.messaging().send(message);
+      // return { success: true, messageId: result };
+      
+      // Mock implementation for development/testing
+      logger.info('Mock Firebase push notification:', {
+        to: message.token,
+        title: message.notification.title,
+        body: message.notification.body
+      });
+      
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      return { success: true };
+
+    } catch (error) {
+      return { success: false, error };
+    }
+  }
+
+  /**
+   * Get user's WebSocket connection (mock implementation)
+   */
+  private static async getUserWebSocket(userId: string): Promise<any | null> {
+    // In production, this would get the user's active WebSocket connection
+    // from a connection manager or Socket.IO namespace
+    // For now, return a mock socket for testing
+    
+    logger.debug(`Getting WebSocket connection for user ${userId}`);
+    
+    // Mock socket implementation
+    return {
+      emit: (event: string, data: any) => {
+        logger.info(`Mock WebSocket emit - Event: ${event}, User: ${userId}`, data);
+      },
+      connected: true,
+      userId
+    };
   }
 
   /**

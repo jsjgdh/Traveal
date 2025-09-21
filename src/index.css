@@ -10,16 +10,30 @@
   --ease-out-cubic: cubic-bezier(0.33, 1, 0.68, 1);
   --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  
+  /* Fluid sizing variables */
+  --fluid-min-width: 320px;
+  --fluid-max-width: 1200px;
+  --fluid-min-font: 14px;
+  --fluid-max-font: 18px;
+  --fluid-min-spacing: 8px;
+  --fluid-max-spacing: 24px;
 }
 
 @layer base {
   html {
     font-family: 'Inter', system-ui, sans-serif;
+    /* Fluid font sizing */
+    font-size: clamp(14px, 1rem + 0.5vw, 18px);
   }
   
   body {
     @apply bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100;
     transition: background-color 0.3s ease, color 0.3s ease;
+    /* Ensure proper sizing on all devices */
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   /* Ensure all inputs have proper text color */
@@ -61,8 +75,10 @@
   }
   
   .mobile-container {
-    @apply max-w-sm mx-auto min-h-screen bg-white dark:bg-gray-900;
+    @apply w-full mx-auto min-h-screen bg-white dark:bg-gray-900;
     transition: background-color 0.3s ease;
+    /* Fluid max-width based on screen size */
+    max-width: min(100%, calc(var(--fluid-min-width) + (var(--fluid-max-width) - var(--fluid-min-width)) * ((100vw - var(--fluid-min-width)) / (var(--fluid-max-width) - var(--fluid-min-width)))));
   }
 
   .dashboard-card {
@@ -141,9 +157,63 @@
   }
 
 /* Responsive Design Enhancements */
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 359px) {
   .mobile-container {
-    @apply max-w-full px-2;
+    @apply px-2;
+  }
+  
+  .touch-friendly {
+    min-height: 40px;
+    min-width: 40px;
+  }
+  
+  .text-responsive {
+    @apply text-xs;
+  }
+  
+  .card-mobile {
+    @apply p-2 rounded-md;
+  }
+  
+  .btn-mobile {
+    @apply py-2 px-3 text-sm;
+  }
+  
+  .spacing-responsive {
+    @apply space-y-3;
+  }
+}
+
+@media screen and (min-width: 360px) and (max-width: 413px) {
+  .mobile-container {
+    @apply px-3;
+  }
+  
+  .touch-friendly {
+    min-height: 42px;
+    min-width: 42px;
+  }
+  
+  .text-responsive {
+    @apply text-sm;
+  }
+  
+  .card-mobile {
+    @apply p-3 rounded-md;
+  }
+  
+  .btn-mobile {
+    @apply py-2 px-3.5 text-sm;
+  }
+  
+  .spacing-responsive {
+    @apply space-y-3.5;
+  }
+}
+
+@media screen and (min-width: 414px) and (max-width: 639px) {
+  .mobile-container {
+    @apply px-4;
   }
   
   .touch-friendly {
@@ -152,21 +222,30 @@
   }
   
   .text-responsive {
-    @apply text-sm;
+    @apply text-base;
   }
   
   .card-mobile {
-    @apply p-3 rounded-lg;
+    @apply p-4 rounded-lg;
   }
   
   .btn-mobile {
-    @apply py-3 px-4 text-base;
+    @apply py-2.5 px-4 text-base;
+  }
+  
+  .spacing-responsive {
+    @apply space-y-4;
   }
 }
 
-@media screen and (min-width: 641px) and (max-width: 768px) {
+@media screen and (min-width: 640px) and (max-width: 767px) {
   .mobile-container {
-    @apply max-w-md px-4;
+    @apply px-5;
+  }
+  
+  .touch-friendly {
+    min-height: 46px;
+    min-width: 46px;
   }
   
   .text-responsive {
@@ -174,17 +253,26 @@
   }
   
   .card-mobile {
-    @apply p-4 rounded-xl;
+    @apply p-5 rounded-lg;
   }
   
   .btn-mobile {
-    @apply py-2.5 px-5;
+    @apply py-3 px-5 text-base;
+  }
+  
+  .spacing-responsive {
+    @apply space-y-5;
   }
 }
 
-@media screen and (min-width: 769px) {
+@media screen and (min-width: 768px) and (max-width: 1023px) {
   .mobile-container {
-    @apply max-w-lg px-6;
+    @apply px-6 max-w-3xl;
+  }
+  
+  .touch-friendly {
+    min-height: 48px;
+    min-width: 48px;
   }
   
   .text-responsive {
@@ -192,11 +280,42 @@
   }
   
   .card-mobile {
-    @apply p-6 rounded-2xl;
+    @apply p-6 rounded-xl;
   }
   
   .btn-mobile {
-    @apply py-2 px-4;
+    @apply py-3 px-6 text-lg;
+  }
+  
+  .spacing-responsive {
+    @apply space-y-6;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .mobile-container {
+    @apply px-8 max-w-4xl;
+  }
+  
+  .touch-friendly {
+    min-height: 50px;
+    min-width: 50px;
+  }
+  
+  .text-responsive {
+    @apply text-xl;
+  }
+  
+  .card-mobile {
+    @apply p-8 rounded-2xl;
+  }
+  
+  .btn-mobile {
+    @apply py-3.5 px-7 text-xl;
+  }
+  
+  .spacing-responsive {
+    @apply space-y-7;
   }
 }
 
@@ -442,6 +561,12 @@
     max-height: 90vh;
     overflow-y: auto;
   }
+  
+  /* Adjust touch targets for landscape */
+  .touch-friendly {
+    min-height: 36px;
+    min-width: 36px;
+  }
 }
 
 /* Touch device optimizations */
@@ -453,6 +578,12 @@
   .touch-feedback:active {
     transform: scale(0.98);
     background-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Larger touch targets on touch devices */
+  .touch-device .touch-friendly {
+    min-height: 48px;
+    min-width: 48px;
   }
 }
 
@@ -495,6 +626,61 @@
 .safe-area-right {
   padding-right: env(safe-area-inset-right);
 }
+
+/* Dynamic font sizing based on viewport width */
+.fluid-text-xs {
+  font-size: clamp(0.7rem, 0.65rem + 0.25vw, 0.85rem);
+}
+
+.fluid-text-sm {
+  font-size: clamp(0.8rem, 0.75rem + 0.25vw, 0.95rem);
+}
+
+.fluid-text-base {
+  font-size: clamp(0.9rem, 0.85rem + 0.25vw, 1.1rem);
+}
+
+.fluid-text-lg {
+  font-size: clamp(1rem, 0.95rem + 0.25vw, 1.25rem);
+}
+
+.fluid-text-xl {
+  font-size: clamp(1.1rem, 1.05rem + 0.25vw, 1.4rem);
+}
+
+.fluid-text-2xl {
+  font-size: clamp(1.25rem, 1.2rem + 0.25vw, 1.6rem);
+}
+
+.fluid-text-3xl {
+  font-size: clamp(1.5rem, 1.4rem + 0.5vw, 2rem);
+}
+
+.fluid-text-4xl {
+  font-size: clamp(1.8rem, 1.7rem + 0.5vw, 2.5rem);
+}
+
+/* Dynamic spacing utilities */
+.fluid-p-1 { padding: clamp(0.25rem, 0.2rem + 0.25vw, 0.5rem); }
+.fluid-p-2 { padding: clamp(0.5rem, 0.4rem + 0.5vw, 1rem); }
+.fluid-p-3 { padding: clamp(0.75rem, 0.6rem + 0.75vw, 1.5rem); }
+.fluid-p-4 { padding: clamp(1rem, 0.8rem + 1vw, 2rem); }
+.fluid-p-5 { padding: clamp(1.25rem, 1rem + 1.25vw, 2.5rem); }
+.fluid-p-6 { padding: clamp(1.5rem, 1.2rem + 1.5vw, 3rem); }
+
+.fluid-m-1 { margin: clamp(0.25rem, 0.2rem + 0.25vw, 0.5rem); }
+.fluid-m-2 { margin: clamp(0.5rem, 0.4rem + 0.5vw, 1rem); }
+.fluid-m-3 { margin: clamp(0.75rem, 0.6rem + 0.75vw, 1.5rem); }
+.fluid-m-4 { margin: clamp(1rem, 0.8rem + 1vw, 2rem); }
+.fluid-m-5 { margin: clamp(1.25rem, 1rem + 1.25vw, 2.5rem); }
+.fluid-m-6 { margin: clamp(1.5rem, 1.2rem + 1.5vw, 3rem); }
+
+.fluid-gap-1 { gap: clamp(0.25rem, 0.2rem + 0.25vw, 0.5rem); }
+.fluid-gap-2 { gap: clamp(0.5rem, 0.4rem + 0.5vw, 1rem); }
+.fluid-gap-3 { gap: clamp(0.75rem, 0.6rem + 0.75vw, 1.5rem); }
+.fluid-gap-4 { gap: clamp(1rem, 0.8rem + 1vw, 2rem); }
+.fluid-gap-5 { gap: clamp(1.25rem, 1rem + 1.25vw, 2.5rem); }
+.fluid-gap-6 { gap: clamp(1.5rem, 1.2rem + 1.5vw, 3rem); }
 }
 
 @layer utilities {
@@ -592,6 +778,15 @@
 
   .bg-size-200 {
     background-size: 200% 200%;
+  }
+  
+  /* Additional responsive utilities */
+  .min-h-screen-responsive {
+    min-height: 100dvh; /* Dynamic viewport height */
+  }
+  
+  .h-screen-responsive {
+    height: 100dvh; /* Dynamic viewport height */
   }
 }
 

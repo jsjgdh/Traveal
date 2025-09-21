@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   Download, 
   FileText, 
@@ -17,42 +17,45 @@ import {
   Settings,
   Award
 } from 'lucide-react'
+import { apiService } from '../../services/api'
 
 function DataExportRequest({ onBack }) {
   const [selectedDataTypes, setSelectedDataTypes] = useState({
     profile: true,
     tripHistory: true,
-    analytics: true,
-    achievements: true,
-    preferences: true,
-    accountHistory: false
+    analytics: false,
+    preferences: true
   })
   
   const [exportFormat, setExportFormat] = useState('json')
   const [dateRange, setDateRange] = useState('all')
   const [customDateStart, setCustomDateStart] = useState('')
   const [customDateEnd, setCustomDateEnd] = useState('')
-  const [deliveryMethod, setDeliveryMethod] = useState('email')
   const [isRequesting, setIsRequesting] = useState(false)
   const [requestStatus, setRequestStatus] = useState(null) // null, 'success', 'error'
+  const [errorMessage, setErrorMessage] = useState('')
   
-  const [existingRequests] = useState([
-    {
-      id: 1,
-      requestDate: '2024-01-15',
-      format: 'JSON',
-      status: 'completed',
-      downloadUrl: '#',
-      expiryDate: '2024-02-15'
-    },
-    {
-      id: 2,
-      requestDate: '2024-01-10',
-      format: 'CSV',
-      status: 'processing',
-      estimatedCompletion: '2024-01-16'
+  const [existingRequests, setExistingRequests] = useState([])
+  const [isLoadingRequests, setIsLoadingRequests] = useState(true)
+
+  // Load existing export requests on component mount
+  useEffect(() => {
+    loadExportRequests()
+  }, [])
+
+  const loadExportRequests = async () => {
+    try {
+      setIsLoadingRequests(true)
+      const response = await apiService.request('/auth/export-requests')
+      if (response.success) {
+        setExistingRequests(response.data.requests || [])
+      }
+    } catch (error) {
+      console.error('Failed to load export requests:', error)
+    } finally {
+      setIsLoadingRequests(false)
     }
-  ])
+  }
 
   const dataTypes = [
     {
@@ -107,17 +110,13 @@ function DataExportRequest({ onBack }) {
 
   const formatOptions = [
     { value: 'json', label: 'JSON', description: 'Structured data format' },
-    { value: 'csv', label: 'CSV', description: 'Spreadsheet-compatible format' },
-    { value: 'pdf', label: 'PDF', description: 'Human-readable document' },
-    { value: 'xml', label: 'XML', description: 'Markup language format' }
+    { value: 'csv', label: 'CSV', description: 'Spreadsheet-compatible format' }
   ]
 
   const dateRangeOptions = [
     { value: 'all', label: 'All Time', description: 'Complete data history' },
     { value: 'last-year', label: 'Last 12 Months', description: 'Past year of data' },
-    { value: 'last-6-months', label: 'Last 6 Months', description: 'Recent 6 months' },
-    { value: 'last-month', label: 'Last Month', description: 'Past 30 days' },
-    { value: 'custom', label: 'Custom Range', description: 'Specify date range' }
+    { value: 'last-month', label: 'Last Month', description: 'Past 30 days' }
   ]
 
   const handleDataTypeChange = (key) => {
@@ -145,20 +144,41 @@ function DataExportRequest({ onBack }) {
     return `${totalSizeMB.toFixed(1)} MB`
   }
 
-  const handleExportRequest = () => {
+  const handleExportRequest = async () => {
     const selectedCount = Object.values(selectedDataTypes).filter(Boolean).length
     if (selectedCount === 0) {
-      alert('Please select at least one data type to export')
+      setErrorMessage('Please select at least one data type to export')
       return
     }
 
     setIsRequesting(true)
+    setErrorMessage('')
     
-    // Simulate API request
-    setTimeout(() => {
+    try {
+      const response = await apiService.request('/auth/export-data', {
+        method: 'POST',
+        body: JSON.stringify({
+          selectedDataTypes,
+          exportFormat,
+          dateRange,
+          customDateStart: customDateStart || undefined,
+          customDateEnd: customDateEnd || undefined
+        })
+      })
+
+      if (response.success) {
+        setRequestStatus('success')
+        // Reload the requests list
+        await loadExportRequests()
+      } else {
+        setErrorMessage(response.message || 'Failed to create export request')
+      }
+    } catch (error) {
+      console.error('Export request failed:', error)
+      setErrorMessage('Network error. Please try again.')
+    } finally {
       setIsRequesting(false)
-      setRequestStatus('success')
-    }, 2000)
+    }
   }
 
   const getStatusIcon = (status) => {

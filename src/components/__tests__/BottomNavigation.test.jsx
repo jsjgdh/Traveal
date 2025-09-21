@@ -29,9 +29,9 @@ describe('BottomNavigation Component', () => {
     
     expect(screen.getByText('Home')).toBeInTheDocument();
     expect(screen.getByText('Discover')).toBeInTheDocument();
+    expect(screen.getByText('Planner')).toBeInTheDocument();
     expect(screen.getByText('Rewards')).toBeInTheDocument();
     expect(screen.getByText('Profile')).toBeInTheDocument();
-    expect(screen.getByText('Settings')).toBeInTheDocument();
   });
 
   test('highlights active dashboard item', () => {
@@ -52,6 +52,15 @@ describe('BottomNavigation Component', () => {
     expect(discoverButton).toHaveClass('text-primary-600', 'bg-primary-50');
   });
 
+  test('highlights active planner item', () => {
+    useLocation.mockReturnValue({ pathname: '/trip-planner' });
+    
+    renderWithRouter(<BottomNavigation />);
+    
+    const plannerButton = screen.getByText('Planner').closest('button');
+    expect(plannerButton).toHaveClass('text-primary-600', 'bg-primary-50');
+  });
+
   test('highlights active rewards item', () => {
     useLocation.mockReturnValue({ pathname: '/rewards' });
     
@@ -68,15 +77,6 @@ describe('BottomNavigation Component', () => {
     
     const profileButton = screen.getByText('Profile').closest('button');
     expect(profileButton).toHaveClass('text-primary-600', 'bg-primary-50');
-  });
-
-  test('highlights active settings item', () => {
-    useLocation.mockReturnValue({ pathname: '/settings' });
-    
-    renderWithRouter(<BottomNavigation />);
-    
-    const settingsButton = screen.getByText('Settings').closest('button');
-    expect(settingsButton).toHaveClass('text-primary-600', 'bg-primary-50');
   });
 
   test('navigates to dashboard when home is clicked', () => {
@@ -101,6 +101,17 @@ describe('BottomNavigation Component', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/discover');
   });
 
+  test('navigates to planner when planner is clicked', () => {
+    useLocation.mockReturnValue({ pathname: '/dashboard' });
+    
+    renderWithRouter(<BottomNavigation />);
+    
+    const plannerButton = screen.getByText('Planner');
+    fireEvent.click(plannerButton);
+    
+    expect(mockNavigate).toHaveBeenCalledWith('/trip-planner');
+  });
+
   test('navigates to rewards when rewards is clicked', () => {
     useLocation.mockReturnValue({ pathname: '/dashboard' });
     
@@ -121,17 +132,6 @@ describe('BottomNavigation Component', () => {
     fireEvent.click(profileButton);
     
     expect(mockNavigate).toHaveBeenCalledWith('/profile');
-  });
-
-  test('navigates to settings when settings is clicked', () => {
-    useLocation.mockReturnValue({ pathname: '/dashboard' });
-    
-    renderWithRouter(<BottomNavigation />);
-    
-    const settingsButton = screen.getByText('Settings');
-    fireEvent.click(settingsButton);
-    
-    expect(mockNavigate).toHaveBeenCalledWith('/settings');
   });
 
   test('shows active indicator dot for current page', () => {

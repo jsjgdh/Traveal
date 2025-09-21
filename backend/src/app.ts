@@ -15,6 +15,8 @@ import tripRoutes from './routes/trips.js';
 import notificationRoutes from './routes/notifications.js';
 import analyticsRoutes from './routes/analytics.js';
 import sosRoutes from './routes/sos.js';
+import mapsRoutes from './routes/maps.js';
+import tripPlannerRoutes from './routes/tripPlanner.js';
 
 const app = express();
 
@@ -98,7 +100,9 @@ app.get('/status', (_req: Request, res: Response) => {
       tripTracking: true,
       anonymization: true,
       notifications: true,
-      analytics: true
+      analytics: true,
+      maps: true,
+      sosEmergency: true
     }
   });
 });
@@ -106,9 +110,11 @@ app.get('/status', (_req: Request, res: Response) => {
 // API routes
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/trips', tripRoutes);
+app.use('/api/v1/trip-planner', tripPlannerRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
 app.use('/api/v1/analytics', analyticsRoutes);
 app.use('/api/v1/sos', sosRoutes);
+app.use('/api/v1/maps', mapsRoutes);
 
 // API documentation redirect
 app.get('/docs', (_req: Request, res: Response) => {
@@ -145,6 +151,18 @@ app.get('/api/docs', (req: Request, res: Response) => {
         'POST /analytics/events': 'Log analytics event',
         'GET /analytics/summary': 'Get user summary',
         'GET /analytics/export': 'Export anonymized data'
+      },
+      maps: {
+        'GET /maps/provider': 'Get current map provider',
+        'POST /maps/provider': 'Set map provider (google/mapmyindia)',
+        'GET /maps/geocode': 'Geocode address to coordinates',
+        'GET /maps/reverse-geocode': 'Reverse geocode coordinates to address',
+        'GET /maps/autocomplete': 'Get place autocomplete suggestions',
+        'GET /maps/place-details': 'Get place details by ID',
+        'POST /maps/route': 'Calculate route between points',
+        'POST /maps/static-map': 'Generate static map URL',
+        'GET /maps/config': 'Get map service configuration',
+        'GET /maps/test-providers': 'Test map provider connectivity'
       }
     },
     authentication: {

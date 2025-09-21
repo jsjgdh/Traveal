@@ -182,6 +182,31 @@ export class AuthService {
   }
 
   /**
+   * Update user profile data
+   */
+  static async updateProfile(
+    userId: string,
+    profileData: any
+  ): Promise<boolean> {
+    try {
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          // Only allow updating specific safe fields
+          preferences: profileData.preferences ? JSON.stringify(profileData.preferences) : undefined,
+          updatedAt: new Date()
+        }
+      });
+
+      logger.info(`User profile updated: ${userId}`);
+      return true;
+    } catch (error) {
+      logger.error('Error updating user profile:', error);
+      return false;
+    }
+  }
+
+  /**
    * Delete user account (GDPR compliance)
    */
   static async deleteUser(userId: string): Promise<boolean> {

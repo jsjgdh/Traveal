@@ -23,6 +23,7 @@ import DiscoverPage from './pages/DiscoverPage'
 import TripValidationDemo from './pages/TripValidationDemo'
 import DataAnalyticsDemo from './pages/DataAnalyticsDemo'
 import NotificationDemo from './pages/NotificationDemo'
+import TripPlannerPage from './pages/TripPlannerPage'
 
 // Onboarding and Notifications
 import { OnboardingFlow } from './components/onboarding'
@@ -37,6 +38,9 @@ import PermissionRequestFlow from './components/sos/PermissionRequestFlow'
 // Theme Context
 import { ThemeProvider } from './contexts/ThemeContext'
 
+// Responsive utilities
+import { useResponsiveDesign } from './utils/appUtils'
+
 // Import test script for development
 if (process.env.NODE_ENV === 'development') {
   import('./test-notifications.js')
@@ -46,23 +50,7 @@ function App() {
   const [isOnboarded, setIsOnboarded] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [showNotificationPermission, setShowNotificationPermission] = useState(false)
-  const [deviceInfo, setDeviceInfo] = useState({ isMobile: false, screenSize: 'md' })
-
-  useEffect(() => {
-    // Enhanced device detection
-    const updateDeviceInfo = () => {
-      const width = window.innerWidth
-      const isMobile = width < 768
-      const screenSize = width < 640 ? 'sm' : width < 768 ? 'md' : width < 1024 ? 'lg' : 'xl'
-      
-      setDeviceInfo({ isMobile, screenSize, width })
-    }
-
-    updateDeviceInfo()
-    window.addEventListener('resize', updateDeviceInfo)
-    
-    return () => window.removeEventListener('resize', updateDeviceInfo)
-  }, [])
+  const { deviceInfo, getResponsivePadding, getContainerMaxWidth } = useResponsiveDesign()
 
   useEffect(() => {
     // Check if user has completed onboarding
@@ -118,6 +106,9 @@ function App() {
     )
   }
 
+  // Dynamic container classes based on screen size
+  const containerClasses = `mobile-container mx-auto w-full ${getResponsivePadding()} ${getContainerMaxWidth()}`
+
   return (
     <ThemeProvider>
       <HapticProvider>
@@ -128,7 +119,7 @@ function App() {
               <NotificationProvider>
                 <EnhancedRouter>
                   <SwipeNavigationProvider>
-                    <div className={`mobile-container ${deviceInfo.screenSize === 'sm' ? 'max-w-sm' : deviceInfo.screenSize === 'md' ? 'max-w-md' : 'max-w-lg'} mx-auto`}>
+                    <div className={containerClasses}>
                       {/* Skip Link for Accessibility */}
                       <SkipLink targetId="main-content">Skip to main content</SkipLink>
                       
@@ -146,6 +137,7 @@ function App() {
                             <Route path="/dashboard" element={<ProtectedRoute><RouteWrapper title="Dashboard"><Dashboard /></RouteWrapper></ProtectedRoute>} />
                             <Route path="/discover" element={<ProtectedRoute><RouteWrapper title="Discover Gems"><DiscoverPage /></RouteWrapper></ProtectedRoute>} />
                             <Route path="/trip" element={<ProtectedRoute><RouteWrapper title="Trip Management"><TripPage /></RouteWrapper></ProtectedRoute>} />
+                            <Route path="/trip-planner" element={<ProtectedRoute><RouteWrapper title="Trip Planner"><TripPlannerPage /></RouteWrapper></ProtectedRoute>} />
                             <Route path="/data" element={<ProtectedRoute><RouteWrapper title="Data Analytics"><DataPage /></RouteWrapper></ProtectedRoute>} />
                             <Route path="/rewards" element={<ProtectedRoute><RouteWrapper title="Rewards"><RewardsPage /></RouteWrapper></ProtectedRoute>} />
                             <Route path="/profile" element={<ProtectedRoute><RouteWrapper title="Profile"><ProfilePage /></RouteWrapper></ProtectedRoute>} />

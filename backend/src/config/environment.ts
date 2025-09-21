@@ -25,6 +25,34 @@ export const config = {
   VAPID_PUBLIC_KEY: process.env.VAPID_PUBLIC_KEY,
   VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY,
   
+  // SMS/Email Notifications
+  TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
+  TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
+  TWILIO_PHONE_NUMBER: process.env.TWILIO_PHONE_NUMBER,
+  SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
+  FROM_EMAIL: process.env.FROM_EMAIL || 'noreply@traveal.app',
+  
+  // Emergency Services
+  EMERGENCY_PHONE_NUMBERS: {
+    IN: '112', // India
+    US: '911', // United States
+    UK: '999', // United Kingdom
+    EU: '112', // European Union
+    DEFAULT: '112'
+  },
+  
+  // Map Services Configuration
+  GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY,
+  GOOGLE_MAPS_PLACES_API_KEY: process.env.GOOGLE_MAPS_PLACES_API_KEY,
+  MAPMYINDIA_API_KEY: process.env.MAPMYINDIA_API_KEY,
+  MAPMYINDIA_CLIENT_ID: process.env.MAPMYINDIA_CLIENT_ID,
+  MAPMYINDIA_CLIENT_SECRET: process.env.MAPMYINDIA_CLIENT_SECRET,
+  
+  // Map Service Settings
+  DEFAULT_MAP_PROVIDER: process.env.DEFAULT_MAP_PROVIDER || 'google', // 'google' or 'mapmyindia'
+  MAP_GEOCODING_ENABLED: process.env.MAP_GEOCODING_ENABLED === 'true',
+  MAP_ROUTING_ENABLED: process.env.MAP_ROUTING_ENABLED === 'true',
+  
   // Security Configuration
   BCRYPT_ROUNDS: parseInt(process.env.BCRYPT_ROUNDS || '12', 10),
   CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:5173',
