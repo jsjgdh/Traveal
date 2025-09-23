@@ -198,7 +198,7 @@ function UserProfile({ onBack }) {
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
               </div>
             )}
-            <label className="absolute -bottom-1 -right-1 bg-primary-600 hover:bg-primary-700 text-white p-2 rounded-full cursor-pointer transition-colors">
+            <label className="absolute -bottom-1 -right-1 bg-primary-600 hover:bg-primary-700 text-white p-2 rounded-full cursor-pointer transition-colors" data-testid="camera-icon">
               <Camera size={12} />
               <input 
                 type="file" 

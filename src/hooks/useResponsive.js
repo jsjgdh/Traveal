@@ -22,22 +22,24 @@ export const useResponsive = () => {
       const height = window.innerHeight
       const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
       
-      // Determine device type based on screen width
-      const isMobile = width < 768
-      const isTablet = width >= 768 && width < 1024
-      const isDesktop = width >= 1024
+      // Determine device type based on screen width (aligned with README breakpoints)
+      const isMobile = width < 640  // Small and medium phones (320px - 639px)
+      const isTablet = width >= 640 && width < 1024  // Tablets (640px - 1023px)
+      const isDesktop = width >= 1024  // Desktops (1024px+)
       const isPortrait = height > width
       
-      // Determine screen size category
+      // Determine screen size category (aligned with README breakpoints)
       let screenSize = 'sm' // default
-      if (width < 640) {
-        screenSize = 'sm'
-      } else if (width < 768) {
-        screenSize = 'md'
+      if (width < 360) {
+        screenSize = 'sm'  // Small phones (320px - 359px)
+      } else if (width < 414) {
+        screenSize = 'md'  // Medium phones (360px - 413px)
+      } else if (width < 640) {
+        screenSize = 'lg'  // Large phones (414px - 639px)
       } else if (width < 1024) {
-        screenSize = 'lg'
+        screenSize = 'xl'  // Tablets (640px - 1023px)
       } else {
-        screenSize = 'xl'
+        screenSize = '2xl'  // Desktops (1024px+)
       }
       
       setDeviceInfo({
@@ -71,15 +73,15 @@ export const useResponsive = () => {
   const isMediumScreen = deviceInfo.screenSize === 'md'
   const isLargeScreen = deviceInfo.screenSize === 'lg'
   const isExtraLargeScreen = deviceInfo.screenSize === 'xl'
+  const is2XLScreen = deviceInfo.screenSize === '2xl'
   
-  // Responsive padding utilities
+  // Responsive padding utilities (aligned with README breakpoints)
   const getResponsivePadding = () => {
-    if (deviceInfo.width < 360) return 'px-2'
-    if (deviceInfo.width < 414) return 'px-3'
-    if (deviceInfo.width < 640) return 'px-4'
-    if (deviceInfo.width < 768) return 'px-5'
-    if (deviceInfo.width < 1024) return 'px-6'
-    return 'px-8'
+    if (deviceInfo.width < 360) return 'px-2'      // Small phones (320px - 359px)
+    if (deviceInfo.width < 414) return 'px-3'      // Medium phones (360px - 413px)
+    if (deviceInfo.width < 640) return 'px-4'      // Large phones (414px - 639px)
+    if (deviceInfo.width < 1024) return 'px-6'     // Tablets (640px - 1023px)
+    return 'px-8'                                  // Desktops (1024px+)
   }
   
   // Responsive container max width
@@ -92,11 +94,11 @@ export const useResponsive = () => {
   // Touch-friendly sizing
   const getTouchTargetSize = () => {
     if (deviceInfo.isTouchDevice) {
-      if (deviceInfo.width < 360) return 'min-h-10 min-w-10' // 40px
-      if (deviceInfo.width < 414) return 'min-h-11 min-w-11' // 44px
-      return 'min-h-12 min-w-12' // 48px
+      if (deviceInfo.width < 360) return 'min-h-10 min-w-10' // 40px for small phones
+      if (deviceInfo.width < 414) return 'min-h-11 min-w-11' // 44px for medium phones
+      return 'min-h-12 min-w-12' // 48px for large phones and tablets
     }
-    return 'min-h-8 min-w-8' // 32px for non-touch devices
+    return 'min-h-8 min-w-8' // 32px for non-touch devices/desktop
   }
 
   return {
@@ -105,6 +107,7 @@ export const useResponsive = () => {
     isMediumScreen,
     isLargeScreen,
     isExtraLargeScreen,
+    is2XLScreen,
     getResponsivePadding,
     getContainerMaxWidth,
     getTouchTargetSize

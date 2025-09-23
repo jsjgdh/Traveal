@@ -66,16 +66,28 @@ function PermissionRequestFlow({ onComplete, onSkip }) {
     setError('')
     
     try {
+      // Check if browser supports geolocation
+      if (!navigator.geolocation) {
+        setError('Geolocation is not supported by your browser')
+        setIsLoading(false)
+        return
+      }
+      
       const result = await backgroundServiceManager.requestLocationPermission()
       
       if (result.granted) {
         setPermissions(prev => ({ ...prev, location: 'granted' }))
         setCurrentStep(prev => prev + 1)
+      } else if (result.state === 'denied') {
+        setError('Location permission was denied. This is required for the SOS system to work properly')
+      } else if (result.state === 'prompt') {
+        setError('Please grant location permission when prompted by your browser')
       } else {
-        setError('Location permission is required for the SOS system to work properly')
+        setError('Location permission request failed')
       }
     } catch (error) {
-      setError('Failed to request location permission')
+      console.error('Location permission error:', error)
+      setError(`Failed to request location permission: ${error.message || 'Unknown error'}`)
     } finally {
       setIsLoading(false)
     }
@@ -86,20 +98,39 @@ function PermissionRequestFlow({ onComplete, onSkip }) {
     setError('')
     
     try {
+      // Check if browser supports notifications
+      if (!('Notification' in window)) {
+        setError('Notifications are not supported by your browser')
+        setIsLoading(false)
+        setCurrentStep(prev => prev + 1)
+        return
+      }
+      
       const result = await backgroundServiceManager.requestNotificationPermission()
       
       if (result.granted) {
         setPermissions(prev => ({ ...prev, notifications: 'granted' }))
         setCurrentStep(prev => prev + 1)
-      } else {
-        setError('Notification permission is recommended for emergency alerts')
+      } else if (result.state === 'denied') {
+        setError('Notification permission was denied. You can enable it later in browser settings')
         // Allow proceeding even if notifications are denied
+        setTimeout(() => {
+          setCurrentStep(prev => prev + 1)
+        }, 2000)
+      } else if (result.state === 'prompt') {
+        setError('Please grant notification permission when prompted by your browser')
+        setTimeout(() => {
+          setCurrentStep(prev => prev + 1)
+        }, 2000)
+      } else {
+        setError('Notification permission request failed')
         setTimeout(() => {
           setCurrentStep(prev => prev + 1)
         }, 2000)
       }
     } catch (error) {
-      setError('Failed to request notification permission')
+      console.error('Notification permission error:', error)
+      setError(`Failed to request notification permission: ${error.message || 'Unknown error'}`)
       setTimeout(() => {
         setCurrentStep(prev => prev + 1)
       }, 2000)
@@ -113,16 +144,31 @@ function PermissionRequestFlow({ onComplete, onSkip }) {
     setError('')
     
     try {
+      // Check if browser supports background operations
+      if (!backgroundServiceManager.isSupported()) {
+        setError('Background operations are not supported by your browser')
+        setIsLoading(false)
+        onComplete(backgroundServiceManager.getPermissionSummary())
+        return
+      }
+      
       const result = await backgroundServiceManager.requestBackgroundPermission()
       
       if (result.granted) {
         setPermissions(prev => ({ ...prev, background: 'granted' }))
+      } else if (result.state === 'denied') {
+        setError('Background permission was denied. The app will have limited functionality')
+      } else if (result.state === 'prompt') {
+        setError('Please grant background permission when prompted by your browser')
+      } else {
+        setError('Background permission request failed')
       }
       
       // Complete the flow regardless of background permission
       onComplete(backgroundServiceManager.getPermissionSummary())
     } catch (error) {
       console.error('Background permission error:', error)
+      setError(`Failed to request background permission: ${error.message || 'Unknown error'}`)
       onComplete(backgroundServiceManager.getPermissionSummary())
     } finally {
       setIsLoading(false)
@@ -142,6 +188,8 @@ function PermissionRequestFlow({ onComplete, onSkip }) {
       case 'background':
         handleBackgroundPermission()
         break
+      default:
+        setError('Unknown step')
     }
   }
 
@@ -319,6 +367,18 @@ function PermissionRequestFlow({ onComplete, onSkip }) {
                 </div>
               </div>
             )}
+            
+            {/* Browser Support Warning */}
+            {!support.geolocation || !support.notifications || !support.serviceWorker ? (
+              <div className="pt-3 border-t border-gray-200">
+                <div className="p-3 bg-yellow-50 rounded-lg">
+                  <p className="text-yellow-800 text-sm">
+                    <strong>Browser Compatibility:</strong> Some features may not work properly in your browser. 
+                    For the best experience, use the latest version of Chrome, Firefox, or Edge.
+                  </p>
+                </div>
+              </div>
+            ) : null}
           </div>
         </div>
 

@@ -274,6 +274,45 @@ export class AuthService {
   }
 
   /**
+   * Get user by database ID (for token validation)
+   */
+  static async getUserById(userId: string): Promise<any | null> {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        include: {
+          _count: {
+            select: {
+              trips: true,
+              notifications: { where: { read: false } }
+            }
+          }
+        }
+      });
+
+      if (!user) return null;
+
+      return {
+        id: user.id,
+        uuid: user.uuid,
+        deviceId: user.deviceId,
+        onboarded: user.onboarded,
+        consentData: JSON.parse(user.consentData),
+        preferences: user.preferences ? JSON.parse(user.preferences) : null,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        stats: {
+          totalTrips: user._count.trips,
+          unreadNotifications: user._count.notifications
+        }
+      };
+    } catch (error) {
+      logger.error('Error getting user by ID:', error);
+      return null;
+    }
+  }
+
+  /**
    * Refresh access token
    */
   static async refreshAccessToken(refreshToken: string): Promise<AuthTokens | null> {

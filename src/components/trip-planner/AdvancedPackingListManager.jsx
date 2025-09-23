@@ -1,6 +1,70 @@
 import { useState, useMemo } from 'react';
 import { Plus, Edit2, Trash2, Check, X, Download, Filter, Search, Package, Shirt, Backpack, Umbrella, Camera } from 'lucide-react';
 
+// Function to generate PDF content
+const generatePDFContent = (items, tripData, getCategoryLabel) => {
+  // Create a simple HTML structure for PDF generation
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>${tripData.title || 'Trip'} - Packing List</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1 { color: #333; border-bottom: 2px solid #0ea5e9; padding-bottom: 10px; }
+        h2 { color: #666; margin-top: 30px; }
+        .stats { display: flex; justify-content: space-between; margin: 20px 0; }
+        .stat-box { border: 1px solid #ddd; padding: 10px; border-radius: 5px; text-align: center; }
+        .stat-value { font-size: 24px; font-weight: bold; color: #0ea5e9; }
+        .stat-label { font-size: 14px; color: #666; }
+        .progress-bar { height: 20px; background: #eee; border-radius: 10px; margin: 10px 0; overflow: hidden; }
+        .progress-fill { height: 100%; background: #0ea5e9; }
+        .item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
+        .item-status { width: 30px; text-align: center; }
+        .item-details { flex: 1; }
+        .item-name { font-weight: bold; }
+        .item-category { background: #e0f2fe; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-left: 10px; }
+        .item-notes { font-size: 14px; color: #666; margin-top: 5px; }
+        .packed { text-decoration: line-through; color: #999; }
+      </style>
+    </head>
+    <body>
+      <h1>${tripData.title || 'Trip'} - Packing List</h1>
+      <p>Generated on: ${new Date().toLocaleDateString()}</p>
+      
+      <div class="stats">
+        <div class="stat-box">
+          <div class="stat-value">${items.length}</div>
+          <div class="stat-label">Total Items</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">${items.filter(item => item.packed).length}</div>
+          <div class="stat-label">Packed</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-value">${items.length > 0 ? Math.round((items.filter(item => item.packed).length / items.length) * 100) : 0}%</div>
+          <div class="stat-label">Progress</div>
+        </div>
+      </div>
+      
+      <h2>Items</h2>
+      ${items.map(item => `
+        <div class="item ${item.packed ? 'packed' : ''}">
+          <div class="item-status">${item.packed ? '✓' : '○'}</div>
+          <div class="item-details">
+            <span class="item-name">${item.quantity}x ${item.name}</span>
+            <span class="item-category">${getCategoryLabel(item.category)}</span>
+            ${item.notes ? `<div class="item-notes">${item.notes}</div>` : ''}
+          </div>
+        </div>
+      `).join('')}
+    </body>
+    </html>
+  `;
+  
+  return htmlContent;
+};
+
 function AdvancedPackingListManager({ tripData, onUpdate }) {
   const [items, setItems] = useState(tripData.packingList || []);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -131,7 +195,27 @@ function AdvancedPackingListManager({ tripData, onUpdate }) {
     return { total, packed, percentage };
   }, [items]);
 
-  const exportPackingList = () => {
+  const exportPackingList = (format = 'txt') => {
+    if (format === 'pdf') {
+      // Generate HTML content for PDF
+      const htmlContent = generatePDFContent(items, tripData, getCategoryLabel);
+      
+      // Create a Blob with the HTML content
+      const blob = new Blob([htmlContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      
+      // Open in new window for printing/saving as PDF
+      const printWindow = window.open(url, '_blank');
+      if (printWindow) {
+        printWindow.onload = () => {
+          printWindow.print();
+        };
+      }
+      
+      return;
+    }
+    
+    // Original text export
     const listText = items.map(item => 
       `${item.packed ? '[✓]' : '[ ]'} ${item.quantity}x ${item.name} (${getCategoryLabel(item.category)})${item.notes ? ` - ${item.notes}` : ''}`
     ).join('\n');
@@ -154,13 +238,28 @@ function AdvancedPackingListManager({ tripData, onUpdate }) {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">Packing List</h2>
           <div className="flex items-center space-x-2">
-            <button
-              onClick={exportPackingList}
-              className="flex items-center space-x-2 px-3 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              <Download size={16} />
-              <span className="hidden sm:inline">Export</span>
-            </button>
+            <div className="relative group">
+              <button
+                className="flex items-center space-x-2 px-3 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                <Download size={16} />
+                <span className="hidden sm:inline">Export</span>
+              </button>
+              <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 hidden group-hover:block z-10">
+                <button
+                  onClick={() => exportPackingList('txt')}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Export as Text
+                </button>
+                <button
+                  onClick={() => exportPackingList('pdf')}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Export as PDF
+                </button>
+              </div>
+            </div>
             <button
               onClick={() => setShowAddModal(true)}
               className="flex items-center space-x-2 px-3 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"

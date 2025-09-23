@@ -54,7 +54,7 @@ describe('Layout Component', () => {
     expect(screen.queryByTestId('bottom-navigation')).not.toBeInTheDocument();
   });
 
-  test('shows bottom navigation on dashboard pages', () => {
+  test('shows bottom navigation but hides header on dashboard pages', () => {
     useLocation.mockReturnValue({ pathname: '/dashboard' });
     
     renderWithRouter(
@@ -67,7 +67,20 @@ describe('Layout Component', () => {
     expect(screen.getByTestId('bottom-navigation')).toBeInTheDocument();
   });
 
-  test('shows bottom navigation on trip pages', () => {
+  test('shows bottom navigation but hides header on trip-planner pages', () => {
+    useLocation.mockReturnValue({ pathname: '/trip-planner' });
+    
+    renderWithRouter(
+      <Layout>
+        <TestChild />
+      </Layout>
+    );
+    
+    expect(screen.queryByTestId('header')).not.toBeInTheDocument();
+    expect(screen.getByTestId('bottom-navigation')).toBeInTheDocument();
+  });
+
+  test('shows both header and bottom navigation on trip pages', () => {
     useLocation.mockReturnValue({ pathname: '/trip/active' });
     
     renderWithRouter(
@@ -76,11 +89,11 @@ describe('Layout Component', () => {
       </Layout>
     );
     
-    expect(screen.queryByTestId('header')).not.toBeInTheDocument();
+    expect(screen.getByTestId('header')).toBeInTheDocument();
     expect(screen.getByTestId('bottom-navigation')).toBeInTheDocument();
   });
 
-  test('shows bottom navigation on data pages', () => {
+  test('shows both header and bottom navigation on data pages', () => {
     useLocation.mockReturnValue({ pathname: '/data/analytics' });
     
     renderWithRouter(
@@ -89,11 +102,11 @@ describe('Layout Component', () => {
       </Layout>
     );
     
-    expect(screen.queryByTestId('header')).not.toBeInTheDocument();
+    expect(screen.getByTestId('header')).toBeInTheDocument();
     expect(screen.getByTestId('bottom-navigation')).toBeInTheDocument();
   });
 
-  test('shows bottom navigation on rewards pages', () => {
+  test('shows both header and bottom navigation on rewards pages', () => {
     useLocation.mockReturnValue({ pathname: '/rewards' });
     
     renderWithRouter(
@@ -102,11 +115,11 @@ describe('Layout Component', () => {
       </Layout>
     );
     
-    expect(screen.queryByTestId('header')).not.toBeInTheDocument();
+    expect(screen.getByTestId('header')).toBeInTheDocument();
     expect(screen.getByTestId('bottom-navigation')).toBeInTheDocument();
   });
 
-  test('shows bottom navigation on profile pages', () => {
+  test('shows both header and bottom navigation on profile pages', () => {
     useLocation.mockReturnValue({ pathname: '/profile' });
     
     renderWithRouter(
@@ -115,11 +128,11 @@ describe('Layout Component', () => {
       </Layout>
     );
     
-    expect(screen.queryByTestId('header')).not.toBeInTheDocument();
+    expect(screen.getByTestId('header')).toBeInTheDocument();
     expect(screen.getByTestId('bottom-navigation')).toBeInTheDocument();
   });
 
-  test('shows bottom navigation on settings pages', () => {
+  test('shows both header and bottom navigation on settings pages', () => {
     useLocation.mockReturnValue({ pathname: '/settings' });
     
     renderWithRouter(
@@ -128,11 +141,11 @@ describe('Layout Component', () => {
       </Layout>
     );
     
-    expect(screen.queryByTestId('header')).not.toBeInTheDocument();
+    expect(screen.getByTestId('header')).toBeInTheDocument();
     expect(screen.getByTestId('bottom-navigation')).toBeInTheDocument();
   });
 
-  test('shows bottom navigation on SOS pages', () => {
+  test('shows both header and bottom navigation on SOS pages', () => {
     useLocation.mockReturnValue({ pathname: '/sos' });
     
     renderWithRouter(
@@ -141,7 +154,20 @@ describe('Layout Component', () => {
       </Layout>
     );
     
-    expect(screen.queryByTestId('header')).not.toBeInTheDocument();
+    expect(screen.getByTestId('header')).toBeInTheDocument();
+    expect(screen.getByTestId('bottom-navigation')).toBeInTheDocument();
+  });
+
+  test('shows both header and bottom navigation on discover pages', () => {
+    useLocation.mockReturnValue({ pathname: '/discover' });
+    
+    renderWithRouter(
+      <Layout>
+        <TestChild />
+      </Layout>
+    );
+    
+    expect(screen.getByTestId('header')).toBeInTheDocument();
     expect(screen.getByTestId('bottom-navigation')).toBeInTheDocument();
   });
 

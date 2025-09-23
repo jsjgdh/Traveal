@@ -67,7 +67,7 @@ describe('Responsive Design Utilities', () => {
   })
 
   test('detects mobile device correctly', () => {
-    mockWindowDimensions(375, 667)
+    mockWindowDimensions(375, 667) // Medium phone
     window.dispatchEvent(resizeEvent)
     
     render(<TestComponent />)
@@ -76,7 +76,7 @@ describe('Responsive Design Utilities', () => {
     expect(deviceInfo.isMobile).toBe(true)
     expect(deviceInfo.isTablet).toBe(false)
     expect(deviceInfo.isDesktop).toBe(false)
-    expect(deviceInfo.screenSize).toBe('sm')
+    expect(deviceInfo.screenSize).toBe('md')
   })
 
   test('detects tablet device correctly', () => {
@@ -89,7 +89,7 @@ describe('Responsive Design Utilities', () => {
     expect(deviceInfo.isMobile).toBe(false)
     expect(deviceInfo.isTablet).toBe(true)
     expect(deviceInfo.isDesktop).toBe(false)
-    expect(deviceInfo.screenSize).toBe('lg')
+    expect(deviceInfo.screenSize).toBe('xl')
   })
 
   test('detects desktop device correctly', () => {
@@ -102,11 +102,11 @@ describe('Responsive Design Utilities', () => {
     expect(deviceInfo.isMobile).toBe(false)
     expect(deviceInfo.isTablet).toBe(false)
     expect(deviceInfo.isDesktop).toBe(true)
-    expect(deviceInfo.screenSize).toBe('xl')
+    expect(deviceInfo.screenSize).toBe('2xl')
   })
 
   test('provides correct responsive padding for small screens', () => {
-    mockWindowDimensions(320, 568)
+    mockWindowDimensions(320, 568) // Small phone
     window.dispatchEvent(resizeEvent)
     
     render(<TestComponent />)
@@ -114,8 +114,17 @@ describe('Responsive Design Utilities', () => {
     expect(screen.getByTestId('responsive-padding').textContent).toBe('px-2')
   })
 
+  test('provides correct responsive padding for medium screens', () => {
+    mockWindowDimensions(375, 667) // Medium phone
+    window.dispatchEvent(resizeEvent)
+    
+    render(<TestComponent />)
+    
+    expect(screen.getByTestId('responsive-padding').textContent).toBe('px-3')
+  })
+
   test('provides correct responsive padding for large screens', () => {
-    mockWindowDimensions(1200, 800)
+    mockWindowDimensions(1200, 800) // Desktop
     window.dispatchEvent(resizeEvent)
     
     render(<TestComponent />)
@@ -124,7 +133,7 @@ describe('Responsive Design Utilities', () => {
   })
 
   test('provides correct touch target sizes', () => {
-    mockWindowDimensions(375, 667)
+    mockWindowDimensions(375, 667) // Medium phone
     mockTouchSupport(true)
     window.dispatchEvent(resizeEvent)
     
@@ -144,7 +153,7 @@ describe('Responsive Design Utilities', () => {
   })
 
   test('provides correct text sizes', () => {
-    mockWindowDimensions(375, 667)
+    mockWindowDimensions(375, 667) // Medium phone
     window.dispatchEvent(resizeEvent)
     
     render(<TestComponent />)

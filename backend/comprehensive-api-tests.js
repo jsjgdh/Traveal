@@ -1,7 +1,7 @@
 // Comprehensive Backend API Test Suite
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:3010';
+const BASE_URL = 'http://localhost:3001';
 const API_BASE = `${BASE_URL}/api/v1`;
 
 // Test data
@@ -91,11 +91,10 @@ async function testAuthentication() {
   }
 }
 
-// Trip Management Tests (Mock endpoints)
+// Trip Management Tests
 async function testTripManagement() {
   log('🗺️ Testing Trip Management Endpoints...');
   
-  // Since the simple server doesn't have trip endpoints, we'll add them
   const tripEndpoints = [
     { method: 'POST', path: '/trips', name: 'Create Trip' },
     { method: 'GET', path: '/trips', name: 'Get User Trips' },
@@ -119,13 +118,12 @@ async function testTripManagement() {
       
       recordTest(endpoint.name, response.status < 500, response.data);
     } catch (err) {
-      // Expect 404 for non-implemented endpoints in simple server
-      recordTest(endpoint.name, err.response?.status === 404, '404 - Endpoint not implemented (expected)');
+      recordTest(endpoint.name, false, err.message);
     }
   }
 }
 
-// Analytics Tests (Mock endpoints)
+// Analytics Tests
 async function testAnalytics() {
   log('📊 Testing Analytics Endpoints...');
   
@@ -151,7 +149,7 @@ async function testAnalytics() {
       
       recordTest(endpoint.name, response.status < 500, response.data);
     } catch (err) {
-      recordTest(endpoint.name, err.response?.status === 404, '404 - Endpoint not implemented (expected)');
+      recordTest(endpoint.name, false, err.message);
     }
   }
 }

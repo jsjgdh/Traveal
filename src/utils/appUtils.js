@@ -30,13 +30,32 @@ export const useDeviceInfo = () => {
       const height = window.innerHeight
       const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
       
+      // Determine device type based on screen width (aligned with README breakpoints)
+      const isMobile = width < 640  // Small and medium phones (320px - 639px)
+      const isTablet = width >= 640 && width < 1024  // Tablets (640px - 1023px)
+      const isDesktop = width >= 1024  // Desktops (1024px+)
+      
+      // Determine screen size category (aligned with README breakpoints)
+      let screenSize = 'sm' // default
+      if (width < 360) {
+        screenSize = 'sm'  // Small phones (320px - 359px)
+      } else if (width < 414) {
+        screenSize = 'md'  // Medium phones (360px - 413px)
+      } else if (width < 640) {
+        screenSize = 'lg'  // Large phones (414px - 639px)
+      } else if (width < 1024) {
+        screenSize = 'xl'  // Tablets (640px - 1023px)
+      } else {
+        screenSize = '2xl'  // Desktops (1024px+)
+      }
+      
       setDeviceInfo({
-        isMobile: width < 768,
-        isTablet: width >= 768 && width < 1024,
-        isDesktop: width >= 1024,
+        isMobile,
+        isTablet,
+        isDesktop,
         hasTouch,
         orientation: height > width ? 'portrait' : 'landscape',
-        screenSize: width < 640 ? 'sm' : width < 768 ? 'md' : width < 1024 ? 'lg' : 'xl',
+        screenSize,
         width,
         height
       })
@@ -59,14 +78,13 @@ export const useDeviceInfo = () => {
 export const useResponsiveDesign = () => {
   const deviceInfo = useDeviceInfo()
   
-  // Get responsive padding class based on screen size
+  // Get responsive padding class based on screen size (aligned with README breakpoints)
   const getResponsivePadding = () => {
-    if (deviceInfo.width < 360) return 'px-2'
-    if (deviceInfo.width < 414) return 'px-3'
-    if (deviceInfo.width < 640) return 'px-4'
-    if (deviceInfo.width < 768) return 'px-5'
-    if (deviceInfo.width < 1024) return 'px-6'
-    return 'px-8'
+    if (deviceInfo.width < 360) return 'px-2'      // Small phones (320px - 359px)
+    if (deviceInfo.width < 414) return 'px-3'      // Medium phones (360px - 413px)
+    if (deviceInfo.width < 640) return 'px-4'      // Large phones (414px - 639px)
+    if (deviceInfo.width < 1024) return 'px-6'     // Tablets (640px - 1023px)
+    return 'px-8'                                  // Desktops (1024px+)
   }
   
   // Get container max width class
@@ -79,21 +97,21 @@ export const useResponsiveDesign = () => {
   // Get touch target size class
   const getTouchTargetSize = () => {
     if (deviceInfo.hasTouch) {
-      if (deviceInfo.width < 360) return 'min-h-10 min-w-10' // 40px
-      if (deviceInfo.width < 414) return 'min-h-11 min-w-11' // 44px
-      return 'min-h-12 min-w-12' // 48px
+      if (deviceInfo.width < 360) return 'min-h-10 min-w-10' // 40px for small phones
+      if (deviceInfo.width < 414) return 'min-h-11 min-w-11' // 44px for medium phones
+      return 'min-h-12 min-w-12' // 48px for large phones and tablets
     }
-    return 'min-h-8 min-w-8' // 32px for non-touch devices
+    return 'min-h-8 min-w-8' // 32px for non-touch devices/desktop
   }
   
   // Get responsive text size class
   const getResponsiveTextSize = (baseSize) => {
     const sizes = {
-      xs: deviceInfo.width < 360 ? 'text-xs' : deviceInfo.width < 414 ? 'text-xs' : 'text-sm',
-      sm: deviceInfo.width < 360 ? 'text-sm' : deviceInfo.width < 414 ? 'text-sm' : 'text-base',
-      base: deviceInfo.width < 360 ? 'text-base' : deviceInfo.width < 414 ? 'text-base' : 'text-lg',
-      lg: deviceInfo.width < 360 ? 'text-lg' : deviceInfo.width < 414 ? 'text-lg' : 'text-xl',
-      xl: deviceInfo.width < 360 ? 'text-xl' : deviceInfo.width < 414 ? 'text-xl' : 'text-2xl'
+      xs: deviceInfo.width < 360 ? 'text-xs' : deviceInfo.width < 414 ? 'text-xs' : deviceInfo.width < 640 ? 'text-sm' : deviceInfo.width < 1024 ? 'text-base' : 'text-lg',
+      sm: deviceInfo.width < 360 ? 'text-sm' : deviceInfo.width < 414 ? 'text-sm' : deviceInfo.width < 640 ? 'text-base' : deviceInfo.width < 1024 ? 'text-lg' : 'text-xl',
+      base: deviceInfo.width < 360 ? 'text-base' : deviceInfo.width < 414 ? 'text-base' : deviceInfo.width < 640 ? 'text-lg' : deviceInfo.width < 1024 ? 'text-xl' : 'text-2xl',
+      lg: deviceInfo.width < 360 ? 'text-lg' : deviceInfo.width < 414 ? 'text-lg' : deviceInfo.width < 640 ? 'text-xl' : deviceInfo.width < 1024 ? 'text-2xl' : 'text-3xl',
+      xl: deviceInfo.width < 360 ? 'text-xl' : deviceInfo.width < 414 ? 'text-xl' : deviceInfo.width < 640 ? 'text-2xl' : deviceInfo.width < 1024 ? 'text-3xl' : 'text-4xl'
     }
     return sizes[baseSize] || sizes.base
   }
@@ -101,12 +119,12 @@ export const useResponsiveDesign = () => {
   // Get responsive spacing class
   const getResponsiveSpacing = (baseSpacing) => {
     const spacing = {
-      1: deviceInfo.width < 360 ? 'space-y-1' : deviceInfo.width < 414 ? 'space-y-1.5' : 'space-y-2',
-      2: deviceInfo.width < 360 ? 'space-y-2' : deviceInfo.width < 414 ? 'space-y-2.5' : 'space-y-3',
-      3: deviceInfo.width < 360 ? 'space-y-3' : deviceInfo.width < 414 ? 'space-y-3.5' : 'space-y-4',
-      4: deviceInfo.width < 360 ? 'space-y-4' : deviceInfo.width < 414 ? 'space-y-5' : 'space-y-6',
-      5: deviceInfo.width < 360 ? 'space-y-5' : deviceInfo.width < 414 ? 'space-y-6' : 'space-y-7',
-      6: deviceInfo.width < 360 ? 'space-y-6' : deviceInfo.width < 414 ? 'space-y-7' : 'space-y-8'
+      1: deviceInfo.width < 360 ? 'space-y-1' : deviceInfo.width < 414 ? 'space-y-1.5' : deviceInfo.width < 640 ? 'space-y-2' : deviceInfo.width < 1024 ? 'space-y-3' : 'space-y-4',
+      2: deviceInfo.width < 360 ? 'space-y-2' : deviceInfo.width < 414 ? 'space-y-2.5' : deviceInfo.width < 640 ? 'space-y-3' : deviceInfo.width < 1024 ? 'space-y-4' : 'space-y-5',
+      3: deviceInfo.width < 360 ? 'space-y-3' : deviceInfo.width < 414 ? 'space-y-3.5' : deviceInfo.width < 640 ? 'space-y-4' : deviceInfo.width < 1024 ? 'space-y-5' : 'space-y-6',
+      4: deviceInfo.width < 360 ? 'space-y-4' : deviceInfo.width < 414 ? 'space-y-5' : deviceInfo.width < 640 ? 'space-y-6' : deviceInfo.width < 1024 ? 'space-y-7' : 'space-y-8',
+      5: deviceInfo.width < 360 ? 'space-y-5' : deviceInfo.width < 414 ? 'space-y-6' : deviceInfo.width < 640 ? 'space-y-7' : deviceInfo.width < 1024 ? 'space-y-8' : 'space-y-10',
+      6: deviceInfo.width < 360 ? 'space-y-6' : deviceInfo.width < 414 ? 'space-y-7' : deviceInfo.width < 640 ? 'space-y-8' : deviceInfo.width < 1024 ? 'space-y-10' : 'space-y-12'
     }
     return spacing[baseSpacing] || spacing[3]
   }

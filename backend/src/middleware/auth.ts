@@ -51,8 +51,8 @@ export const authenticate = async (
       return;
     }
 
-    // Get user from database
-    const user = await AuthService.getUserByUuid(decoded.userId);
+    // Get user from database by ID (token contains database ID)
+    const user = await AuthService.getUserById(decoded.userId);
     
     if (!user) {
       sendError(res, 'User not found', 401);
@@ -96,7 +96,7 @@ export const optionalAuth = async (
     const decoded = AuthService.verifyAccessToken(token);
     
     if (decoded) {
-      const user = await AuthService.getUserByUuid(decoded.userId);
+      const user = await AuthService.getUserById(decoded.userId);
       if (user) {
         req.user = user;
       }
