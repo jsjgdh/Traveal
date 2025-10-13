@@ -9,7 +9,7 @@ A comprehensive, privacy-first mobile web application for collecting anonymized 
 
 ## 📖 Complete Documentation
 
-**📚 [Full Documentation Index](./docs/README.md)** - Start here for complete guides
+**📚 [Full Documentation Index](./docs/README.md)** - Start here for complete guides // ReadMe file 
 
 | Quick Links | Description |
 |-------------|-------------|
