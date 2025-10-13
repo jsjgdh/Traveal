@@ -228,14 +228,14 @@ class LocationBridge(private val reactContext: ReactApplicationContext) :
             "validation" -> HapticType.VALIDATION
             "achievement" -> HapticType.ACHIEVEMENT
             "error" -> HapticType.ERROR
-            else -> HapticType.WAYPOINT      
+            else -> HapticType.WAYPOINT
         }
 
         playHapticFeedback(hapticType)
         callback.invoke(null, "Haptic played")
     }
 
-    // MARK: - Haptic Feedback 
+    // MARK: - Haptic Feedback
     enum class HapticType {
         TRIP_START, TRIP_END, WAYPOINT, VALIDATION, ACHIEVEMENT, ERROR
     }
@@ -378,7 +378,7 @@ class LocationBridge(private val reactContext: ReactApplicationContext) :
             // Send location update to JavaScript
             sendLocationUpdate(currentTripId!!, locationData)
 
-            // Send gentle haptic feedback for waypoints (every 10th update)    
+            // Send gentle haptic feedback for waypoints (every 10th update)
             if ((currentTime / 1000) % 10 == 0L) {
                 playHapticFeedback(HapticType.WAYPOINT)
             }
@@ -397,7 +397,7 @@ class LocationBridge(private val reactContext: ReactApplicationContext) :
         playHapticFeedback(HapticType.ERROR)
     }
 
-    // MARK: - JavaScript 
+    // MARK: - JavaScript Communication
     private fun sendLocationUpdate(tripId: String, location: LocationData) {
         try {
             val params = Arguments.createMap().apply {
