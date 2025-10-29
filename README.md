@@ -60,7 +60,7 @@ graph TB
     style L fill:#e74c3c,stroke:#333
 ```
 
-### Technology Stack
+### Technology Stack ....
 
 #### 🎨 Frontend
 - **React 18**: Modern React with hooks and concurrent rendering
