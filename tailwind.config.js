@@ -31,7 +31,7 @@ export default {
           700: '#15803d',
           800: '#166534',
           900: '#14532d',
-        }
+        }                                  
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
